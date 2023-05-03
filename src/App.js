@@ -1,23 +1,54 @@
-import logo from './logo.svg';
+import { useState } from 'react';
 import './App.css';
 
 function App() {
+  const [inputValue, setInputValue] = useState('');
+
+  const handleInputChange = (event) => {
+    setInputValue(event.target.value);
+  };
+
+  const handleFormSubmit = async (event) => {
+    event.preventDefault();
+
+    const response = await fetch('http://localhost:8080/mango/melancholy/pal/streaming/conversations/expressions', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ message: inputValue }),
+    });
+
+    if (response.status === 200 && response.headers.get('Content-Type') === 'text/event-stream;charset=UTF-8') {
+      const reader = response.body.getReader();
+      const decoder = new TextDecoder();
+
+      const processStream = async () => {
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) {
+            break;
+          }
+
+          const messages = decoder.decode(value);
+          console.log('Messages received:', messages);
+        }
+      };
+
+      processStream().catch((error) => {
+        console.error('Error processing stream:', error);
+      });
+    } else {
+      console.error('Error fetching data:', response.statusText);
+    }
+  };
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <form onSubmit={handleFormSubmit}>
+        <input type="text" value={inputValue} onChange={handleInputChange} />
+        <button type="submit">Send</button>
+      </form>
     </div>
   );
 }
