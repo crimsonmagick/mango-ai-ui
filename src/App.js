@@ -20,26 +20,12 @@ function App() {
     });
 
     if (response.status === 200 && response.headers.get('Content-Type') === 'text/event-stream;charset=UTF-8') {
-      const reader = response.body.getReader();
       const decoder = new TextDecoder();
 
-      const processStream = async () => {
-        const { done, value } = await reader.read();
-
-        if (done) {
-          return;
-        }
-
-        const messages = decoder.decode(value);
-        console.log('Messages received:', messages);
-
-        // Recursively call processStream to read the next chunk of data
-        await processStream();
-      };
-
-      processStream().catch((error) => {
-        console.error('Error processing stream:', error);
-      });
+      for await (const chunk of response.body) {
+        const message = decoder.decode(chunk);
+        console.log(`Message received: ${message}`);
+      }
     } else {
       console.error('Error fetching data:', response.statusText);
     }
