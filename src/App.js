@@ -24,15 +24,17 @@ function App() {
       const decoder = new TextDecoder();
 
       const processStream = async () => {
-        while (true) {
-          const { done, value } = await reader.read();
-          if (done) {
-            break;
-          }
+        const { done, value } = await reader.read();
 
-          const messages = decoder.decode(value);
-          console.log('Messages received:', messages);
+        if (done) {
+          return;
         }
+
+        const messages = decoder.decode(value);
+        console.log('Messages received:', messages);
+
+        // Recursively call processStream to read the next chunk of data
+        await processStream();
       };
 
       processStream().catch((error) => {
