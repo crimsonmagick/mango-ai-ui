@@ -3,15 +3,24 @@ import './App.css';
 
 function App() {
   const [inputValue, setInputValue] = useState('');
-  const [message, setMessage] = useState('');
+  const [messages, setMessages] = useState([]);
+  const [activeMessageIndex, setActiveMessageIndex] = useState(0);
+
   const handleInputChange = (event) => {
     setInputValue(event.target.value);
   };
 
-  const addMessage = (text) => {
-    setMessage((prevMessage) => prevMessage + text);
+  const updateMessage = (text, index) => {
+    setMessages((prevMessages) => {
+      const messages = prevMessages.slice();
+      messages.length <= index ? messages[index] = text : messages[index] = messages[index] + text;
+      return messages;
+    });
   };
 
+  const incrementActiveMessageIndex = () => {
+    setActiveMessageIndex(prevIndex => prevIndex + 1)
+  }
 
   const handleFormSubmit = async (event) => {
     event.preventDefault();
@@ -34,7 +43,7 @@ function App() {
             const messageObject = JSON.parse(textString);
             if (messageObject.choices && messageObject.choices[0] && messageObject.choices[0].text !== null) {
               const text = messageObject.choices[0].text;
-              addMessage(text);
+              updateMessage(text, activeMessageIndex);
             }
           } catch (error) {
             const errorMessage = `Unable to parse received text string. textString=${textString}`;
@@ -55,6 +64,7 @@ function App() {
 
         if (done) {
           await writer.close();
+          incrementActiveMessageIndex();
           return;
         }
 
@@ -78,13 +88,15 @@ function App() {
 
   return (
     <div className="App">
+      <div>
+        {messages.map((msg, index) => (
+          <p key={index}>{msg}</p>
+        ))}
+      </div>
       <form onSubmit={handleFormSubmit}>
         <input type="text" value={inputValue} onChange={handleInputChange}/>
         <button type="submit">Send</button>
       </form>
-      <div>
-        <p>{message}</p>
-      </div>
     </div>
   );
 }
