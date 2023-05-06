@@ -3,10 +3,15 @@ import './App.css';
 
 function App() {
   const [inputValue, setInputValue] = useState('');
-
+  const [message, setMessage] = useState('');
   const handleInputChange = (event) => {
     setInputValue(event.target.value);
   };
+
+  const addMessage = (text) => {
+    setMessage((prevMessage) => prevMessage + text);
+  };
+
 
   const handleFormSubmit = async (event) => {
     event.preventDefault();
@@ -27,9 +32,9 @@ function App() {
         write: async (textString) => {
           try {
             const messageObject = JSON.parse(textString);
-            if (messageObject.choices && messageObject.choices[0] && messageObject.choices[0].text != null) {
+            if (messageObject.choices && messageObject.choices[0] && messageObject.choices[0].text !== null) {
               const text = messageObject.choices[0].text;
-              console.log(text);
+              addMessage(text);
             }
           } catch (error) {
             const errorMessage = `Unable to parse received text string. textString=${textString}`;
@@ -77,6 +82,9 @@ function App() {
         <input type="text" value={inputValue} onChange={handleInputChange}/>
         <button type="submit">Send</button>
       </form>
+      <div>
+        <p>{message}</p>
+      </div>
     </div>
   );
 }
