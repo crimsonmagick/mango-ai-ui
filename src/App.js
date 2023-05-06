@@ -37,7 +37,7 @@ function App() {
       const reader = response.body.getReader();
       const decoder = new TextDecoder();
 
-      const sink = {
+      const textFragmentSink = {
         write: async (textString) => {
           try {
             const messageObject = JSON.parse(textString);
@@ -55,30 +55,29 @@ function App() {
         abort: (err) => console.error('Stream error:', err),
       };
 
-      const writableStream = new WritableStream(sink);
+      const writableStream = new WritableStream(textFragmentSink);
       const writer = writableStream.getWriter();
 
-      const processStream = async () => {
-        const ret = await reader.read();
-        const {done, value} = ret;
+      const processFragmentStream = async () => {
+        let {done, value} = await reader.read();
 
-        if (done) {
-          await writer.close();
-          incrementActiveMessageIndex();
-          return;
+        while (!done) {
+          const textChunk = decoder.decode(value);
+          const textStrings = textChunk.split('\n')
+            .filter(text => text !== "" && text !== '\n');
+          for (const textString of textStrings) {
+            await writer.write(textString);
+          }
+
+          const readResult = await reader.read();
+          done = readResult.done;
+          value = readResult.value;
         }
-
-        const textChunk = decoder.decode(value);
-        const textStrings = textChunk.split('\n').filter(text => text !== "" && text !== '\n');
-        for (const textString of textStrings) {
-          await writer.write(textString);
-        }
-
-        // Recursively call processStream to read the next chunk of data
-        await processStream();
+        await writer.close();
+        incrementActiveMessageIndex();
       };
 
-      processStream().catch((error) => {
+      processFragmentStream().catch((error) => {
         console.error('Error processing stream:', error);
       });
     } else {
