@@ -23,8 +23,9 @@ textarea {
   border-radius: 5px;
   border: 1px solid gray;
   width: 80%;
-  height: 100px;
   resize: none;
+  overflow: hidden;
+  margin-right: 15px;
 }
 
 
@@ -45,6 +46,10 @@ textarea {
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+.input-wrapper button:hover {
+  cursor: pointer;
 }
 
 .input-container {

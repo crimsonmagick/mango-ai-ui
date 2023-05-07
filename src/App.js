@@ -5,10 +5,18 @@ function App() {
   const [inputValue, setInputValue] = useState('');
   const [messages, setMessages] = useState([]);
   const [activeMessageIndex, setActiveMessageIndex] = useState(0);
+  const [textAreaRows, setTextAreaRows] = useState(1);
 
   const handleInputChange = (event) => {
     setInputValue(event.target.value);
+    updateTextAreaRows();
   };
+
+  const updateTextAreaRows = () => {
+    const numRows = inputValue.split('\n').length;
+    setTextAreaRows(numRows);
+  };
+
 
   const updateMessage = (text, index) => {
     setMessages((prevMessages) => {
@@ -103,7 +111,7 @@ function App() {
         </div>
         <form onSubmit={handleFormSubmit} className="form-container">
           <div className="input-wrapper">
-            <textarea value={inputValue} onChange={handleInputChange} onKeyDown={handleKeyDown} />
+            <textarea value={inputValue} onChange={handleInputChange} onKeyDown={handleKeyDown}   rows={textAreaRows} />
             <button type="submit"><i className="fa fa-paper-plane"></i></button>
           </div>
         </form>
