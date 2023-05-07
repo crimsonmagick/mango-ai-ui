@@ -52,7 +52,7 @@ function App() {
           }
         },
         close: () => console.log('Stream closed'),
-        abort: (err) => console.error('Stream error:', err),
+        abort: (err) => console.error('Stream error:', err)
       };
 
       const writableStream = new WritableStream(textFragmentSink);
@@ -65,14 +65,14 @@ function App() {
           const textChunk = decoder.decode(value);
           const textStrings = textChunk.split('\n')
             .filter(text => text !== "" && text !== '\n');
+
           for (const textString of textStrings) {
             await writer.write(textString);
           }
 
-          const readResult = await reader.read();
-          done = readResult.done;
-          value = readResult.value;
+          ({done, value} = await reader.read());
         }
+
         await writer.close();
         incrementActiveMessageIndex();
       };
