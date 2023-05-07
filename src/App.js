@@ -85,17 +85,29 @@ function App() {
     }
   };
 
+  const handleKeyDown = (event) => {
+    if (event.key === 'Enter' && event.ctrlKey) {
+      event.preventDefault();
+      handleFormSubmit(event);
+    }
+  };
+
+
   return (
     <div className="App">
-      <div>
-        {messages.map((msg, index) => (
-          <p key={index}>{msg}</p>
-        ))}
+      <div className="App-header">
+        <div className="message-container">
+          {messages.map((msg, index) => (
+            <p key={index}>{msg}</p>
+          ))}
+        </div>
+        <form onSubmit={handleFormSubmit} className="form-container">
+          <div className="input-wrapper">
+            <textarea value={inputValue} onChange={handleInputChange} onKeyDown={handleKeyDown} />
+            <button type="submit"><i className="fa fa-paper-plane"></i></button>
+          </div>
+        </form>
       </div>
-      <form onSubmit={handleFormSubmit}>
-        <input type="text" value={inputValue} onChange={handleInputChange}/>
-        <button type="submit">Send</button>
-      </form>
     </div>
   );
 }
