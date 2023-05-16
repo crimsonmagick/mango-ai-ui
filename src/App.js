@@ -6,6 +6,7 @@ function App() {
   const [messages, setMessages] = useState([]);
   const [nextMessageIndex, setNextMessageIndex] = useState(0);
   const [textAreaRows, setTextAreaRows] = useState(1);
+  const [receiving, setReceiving] = useState(false);
 
   const handleInputChange = (event) => {
     setInputValue(event.target.value);
@@ -28,6 +29,7 @@ function App() {
 
   const handleFormSubmit = async (event) => {
     event.preventDefault();
+    setReceiving(true);
 
     const userMessageIndex = nextMessageIndex;
     const responseMessageIndex = nextMessageIndex + 1;
@@ -62,8 +64,14 @@ function App() {
             throw new Error(errorMessage, {cause: error});
           }
         },
-        close: () => console.log('Stream closed'),
-        abort: (err) => console.error('Stream error:', err)
+        close: () =>  {
+          console.log('Stream closed')
+          setReceiving(false);
+        },
+        abort: (err) => {
+          console.error('Stream error:', err)
+          setReceiving(false);
+        }
       };
 
       const writableStream = new WritableStream(textFragmentSink);
@@ -89,14 +97,18 @@ function App() {
 
       processFragmentStream().catch((error) => {
         console.error('Error processing stream:', error);
+        writableStream.abort();
+        throw error;
       });
     } else {
       console.error('Error fetching data:', response.statusText);
+      setReceiving(false);
+      throw new Error('Error fetching data: ' + response.statusText);
     }
   };
 
   const handleKeyDown = (event) => {
-    if (event.key === 'Enter' && event.ctrlKey) {
+    if (!receiving && event.key === 'Enter' && event.ctrlKey) {
       event.preventDefault();
       handleFormSubmit(event);
     }
@@ -114,7 +126,7 @@ function App() {
         <form onSubmit={handleFormSubmit} className="form-container">
           <div className="input-wrapper">
             <textarea value={inputValue} onChange={handleInputChange} onKeyDown={handleKeyDown} rows={textAreaRows} />
-            <button type="submit"><i className="fa fa-paper-plane"></i></button>
+            <button type="submit" disabled={receiving}><i className="fa fa-paper-plane"></i></button>
           </div>
         </form>
       </div>
