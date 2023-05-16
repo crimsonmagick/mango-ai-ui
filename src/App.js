@@ -4,7 +4,7 @@ import './App.css';
 function App() {
   const [inputValue, setInputValue] = useState('');
   const [messages, setMessages] = useState([]);
-  const [activeMessageIndex, setActiveMessageIndex] = useState(0);
+  const [nextMessageIndex, setNextMessageIndex] = useState(0);
   const [textAreaRows, setTextAreaRows] = useState(1);
 
   const handleInputChange = (event) => {
@@ -26,12 +26,15 @@ function App() {
     });
   };
 
-  const incrementActiveMessageIndex = () => {
-    setActiveMessageIndex(prevIndex => prevIndex + 1)
-  }
-
   const handleFormSubmit = async (event) => {
     event.preventDefault();
+
+    const userMessageIndex = nextMessageIndex;
+    const responseMessageIndex = nextMessageIndex + 1;
+
+    updateMessage(inputValue, userMessageIndex);
+    updateMessage('', responseMessageIndex);
+    setNextMessageIndex(prevIndex => prevIndex + 2)
 
     const response = await fetch('http://localhost:8080/mango/melancholy/pal/streaming/conversations/expressions', {
       method: 'POST',
@@ -51,7 +54,7 @@ function App() {
             const messageObject = JSON.parse(textString);
             if (messageObject.choices && messageObject.choices[0] && messageObject.choices[0].text !== null) {
               const text = messageObject.choices[0].text;
-              updateMessage(text, activeMessageIndex);
+              updateMessage(text, responseMessageIndex);
             }
           } catch (error) {
             const errorMessage = `Unable to parse received text string. textString=${textString}`;
@@ -82,7 +85,6 @@ function App() {
         }
 
         await writer.close();
-        incrementActiveMessageIndex();
       };
 
       processFragmentStream().catch((error) => {
@@ -111,7 +113,7 @@ function App() {
         </div>
         <form onSubmit={handleFormSubmit} className="form-container">
           <div className="input-wrapper">
-            <textarea value={inputValue} onChange={handleInputChange} onKeyDown={handleKeyDown}   rows={textAreaRows} />
+            <textarea value={inputValue} onChange={handleInputChange} onKeyDown={handleKeyDown} rows={textAreaRows} />
             <button type="submit"><i className="fa fa-paper-plane"></i></button>
           </div>
         </form>
