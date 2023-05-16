@@ -103,7 +103,7 @@ function App() {
 
   return (
     <div className="App">
-      <div className="App-header">
+      <div className="App-body">
         <div className="message-container">
           {messages.map((msg, index) => (
             <p key={index}>{msg}</p>
