@@ -35,6 +35,7 @@ textarea {
   align-items: flex-end;
   justify-content: center;
   width: 80%;
+  margin-bottom: 3%;
 }
 
 .input-wrapper button {
@@ -52,11 +53,6 @@ textarea {
 
 .input-wrapper button:hover {
   cursor: pointer;
-}
-
-.input-container {
-  width: 80%;
-  margin: 0 auto;
 }
 
 .form-container {

@@ -1,4 +1,4 @@
-import {useState} from 'react';
+import {useEffect, useRef, useState} from 'react';
 import './App.css';
 
 function App() {
@@ -7,6 +7,12 @@ function App() {
   const [nextMessageIndex, setNextMessageIndex] = useState(0);
   const [textAreaRows, setTextAreaRows] = useState(1);
   const [receiving, setReceiving] = useState(false);
+  const messagesEndRef = useRef(null);
+
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages, inputValue]);
+
 
   const handleInputChange = (event) => {
     setInputValue(event.target.value);
@@ -124,7 +130,7 @@ function App() {
           ))}
         </div>
         <form onSubmit={handleFormSubmit} className="form-container">
-          <div className="input-wrapper">
+          <div className="input-wrapper" ref={messagesEndRef}>
             <textarea value={inputValue} onChange={handleInputChange} onKeyDown={handleKeyDown} rows={textAreaRows} />
             <button type="submit" disabled={receiving}><i className="fa fa-paper-plane"></i></button>
           </div>
