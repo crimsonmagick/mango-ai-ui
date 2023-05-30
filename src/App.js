@@ -31,6 +31,7 @@ function App() {
 
   const handleFormSubmit = async (event) => {
     event.preventDefault();
+    setInputValue('');
     setReceiving(true);
 
     const userMessageIndex = nextMessageIndex;
