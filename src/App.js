@@ -57,8 +57,8 @@ function App() {
         write: async (textString) => {
           try {
             const messageObject = JSON.parse(textString);
-            if (messageObject.choices && messageObject.choices[0] && messageObject.choices[0].text !== null) {
-              const text = messageObject.choices[0].text;
+            if (typeof messageObject === "object" && messageObject.contentFragment !== null) {
+              const text = messageObject.contentFragment;
               updateMessage(text, responseMessageIndex);
             }
           } catch (error) {
