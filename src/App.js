@@ -41,7 +41,7 @@ function App() {
     updateMessage('', responseMessageIndex);
     setNextMessageIndex(prevIndex => prevIndex + 2)
 
-    const response = await fetch('http://localhost:8080/mango/melancholy/pal/streaming/conversations/expressions', {
+    const response = await fetch('http://localhost:8080/mango/melancholy/pal/streamed/conversations', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
