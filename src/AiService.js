@@ -1,6 +1,7 @@
-// AiService.js
+import config from './Config';
+
 const handleFormSubmit = async (inputValue, callback) => {
-  const response = await fetch('http://localhost:8080/mango/melancholy/pal/streamed/conversations', {
+  const response = await fetch(config.API_URL, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
