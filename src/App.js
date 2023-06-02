@@ -1,5 +1,5 @@
 import {useEffect, useRef, useState} from 'react';
-import {startConversation} from './AiService';
+import {sendExpression, startConversation} from './AiService';
 import './App.css';
 
 function App() {
@@ -8,12 +8,12 @@ function App() {
   const [nextMessageIndex, setNextMessageIndex] = useState(0);
   const [textAreaRows, setTextAreaRows] = useState(1);
   const [receiving, setReceiving] = useState(false);
+  const [currentConversationId, setCurrentConversationId] = useState(null)
   const messagesEndRef = useRef(null);
 
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    messagesEndRef.current?.scrollIntoView({behavior: "smooth"});
   }, [messages, inputValue]);
-
 
   const handleInputTextChange = (event) => {
     const updatedValue = event.target.value;
@@ -30,7 +30,7 @@ function App() {
     });
   };
 
-  const submitForm = async (event) => {
+  const handleFormSubmit = async (event) => {
     event.preventDefault();
     setReceiving(true);
 
@@ -43,9 +43,15 @@ function App() {
 
     setInputValue('');
     try {
-      await startConversation(inputValue, text => updateMessage(text, responseMessageIndex));
+      if (currentConversationId == null) {
+        const details = await startConversation(inputValue, text => updateMessage(text, responseMessageIndex));
+        setCurrentConversationId(details.conversationId);
+      } else {
+        await sendExpression(currentConversationId, inputValue, text => updateMessage(text, responseMessageIndex));
+      }
     } catch (error) {
       console.error('Error invoking AiService: ', error);
+      updateMessage("!!ERROR IN RESPONSE STREAM!!", responseMessageIndex);
     }
     setReceiving(false);
   };
@@ -53,10 +59,9 @@ function App() {
   const handleKeyDown = async (event) => {
     if (!receiving && event.key === 'Enter' && event.ctrlKey) {
       event.preventDefault();
-      await submitForm(event);
+      await handleFormSubmit(event);
     }
   };
-
 
   return (
     <div className="App">
@@ -66,9 +71,9 @@ function App() {
             <p key={index}>{msg}</p>
           ))}
         </div>
-        <form onSubmit={submitForm} className="form-container">
+        <form onSubmit={handleFormSubmit} className="form-container">
           <div className="input-wrapper" ref={messagesEndRef}>
-        <textarea value={inputValue} onChange={handleInputTextChange} onKeyDown={handleKeyDown} rows={textAreaRows} />
+            <textarea value={inputValue} onChange={handleInputTextChange} onKeyDown={handleKeyDown} rows={textAreaRows}/>
             <button type="submit" disabled={receiving}><i className="fa fa-paper-plane"></i></button>
           </div>
         </form>

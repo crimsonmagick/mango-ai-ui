@@ -21,10 +21,15 @@ const invokeService = async (resourceUrl, inputValue, callback) => {
     const reader = response.body.getReader();
     const decoder = new TextDecoder();
 
+    let conversationId = null;
+
     const textFragmentSink = {
       write: async (textString) => {
         try {
           const messageObject = JSON.parse(textString);
+          if (conversationId == null) {
+            conversationId = messageObject.conversationId;
+          }
           if (typeof messageObject === "object" && messageObject.contentFragment !== null) {
             const text = messageObject.contentFragment;
             callback(text);
@@ -64,11 +69,12 @@ const invokeService = async (resourceUrl, inputValue, callback) => {
       return writer.close();
     };
 
-    return processFragmentStream().catch((error) => {
+    await processFragmentStream().catch((error) => {
       console.error('Error processing stream:', error);
       writableStream.abort();
       throw error;
     });
+    return {conversationId: conversationId};
   } else {
     console.error('Error fetching data:', response.statusText);
     return Promise.reject(new Error('Error fetching data: ' + response.statusText));
