@@ -1,5 +1,5 @@
 import {useEffect, useRef, useState} from 'react';
-import handleFormSubmit from './AiService';
+import {startConversation} from './AiService';
 import './App.css';
 
 function App() {
@@ -43,7 +43,7 @@ function App() {
 
     setInputValue('');
     try {
-      await handleFormSubmit(inputValue, text => updateMessage(text, responseMessageIndex));
+      await startConversation(inputValue, text => updateMessage(text, responseMessageIndex));
     } catch (error) {
       console.error('Error invoking AiService: ', error);
     }

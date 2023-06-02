@@ -1,7 +1,15 @@
 import config from './Config';
 
-const handleFormSubmit = async (inputValue, callback) => {
-  const response = await fetch(config.API_URL, {
+const startConversation = async (text, callback) => {
+  return invokeService("/conversations", text, callback);
+}
+
+const sendExpression = async (conversationId, text, callback) => {
+  return invokeService(`/conversations/${conversationId}/expressions`, text, callback);
+}
+
+const invokeService = async (resourceUrl, inputValue, callback) => {
+  const response = await fetch(config.API_URL + resourceUrl, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -67,4 +75,4 @@ const handleFormSubmit = async (inputValue, callback) => {
   }
 };
 
-export default handleFormSubmit;
+export {startConversation, sendExpression};
