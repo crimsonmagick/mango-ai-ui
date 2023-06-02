@@ -1,14 +1,5 @@
 // AiService.js
-const handleFormSubmit = async (inputValue, setReceiving, updateMessage, nextMessageIndex, setNextMessageIndex) => {
-  setReceiving(true);
-
-  const userMessageIndex = nextMessageIndex;
-  const responseMessageIndex = nextMessageIndex + 1;
-
-  updateMessage(inputValue, userMessageIndex);
-  updateMessage('', responseMessageIndex);
-  setNextMessageIndex(prevIndex => prevIndex + 2)
-
+const handleFormSubmit = async (inputValue, callback) => {
   const response = await fetch('http://localhost:8080/mango/melancholy/pal/streamed/conversations', {
     method: 'POST',
     headers: {
@@ -27,7 +18,7 @@ const handleFormSubmit = async (inputValue, setReceiving, updateMessage, nextMes
           const messageObject = JSON.parse(textString);
           if (typeof messageObject === "object" && messageObject.contentFragment !== null) {
             const text = messageObject.contentFragment;
-            updateMessage(text, responseMessageIndex);
+            callback(text);
           }
         } catch (error) {
           const errorMessage = `Unable to parse received text string. textString=${textString}`;
@@ -35,13 +26,11 @@ const handleFormSubmit = async (inputValue, setReceiving, updateMessage, nextMes
           throw new Error(errorMessage, {cause: error});
         }
       },
-      close: () =>  {
+      close: () => {
         console.log('Stream closed')
-        setReceiving(false);
       },
       abort: (err) => {
         console.error('Stream error:', err)
-        setReceiving(false);
       }
     };
 
@@ -63,18 +52,17 @@ const handleFormSubmit = async (inputValue, setReceiving, updateMessage, nextMes
         ({done, value} = await reader.read());
       }
 
-      await writer.close();
+      return writer.close();
     };
 
-    processFragmentStream().catch((error) => {
+    return processFragmentStream().catch((error) => {
       console.error('Error processing stream:', error);
       writableStream.abort();
       throw error;
     });
   } else {
     console.error('Error fetching data:', response.statusText);
-    setReceiving(false);
-    throw new Error('Error fetching data: ' + response.statusText);
+    return Promise.reject(new Error('Error fetching data: ' + response.statusText));
   }
 };
 

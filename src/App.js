@@ -30,16 +30,30 @@ function App() {
     });
   };
 
-  const submitForm = (event) => {
+  const submitForm = async (event) => {
     event.preventDefault();
+    setReceiving(true);
+
+    const userMessageIndex = nextMessageIndex;
+    const responseMessageIndex = nextMessageIndex + 1;
+
+    updateMessage(inputValue, userMessageIndex);
+    updateMessage('', responseMessageIndex);
+    setNextMessageIndex(prevIndex => prevIndex + 2)
+
     setInputValue('');
-    handleFormSubmit(inputValue, setReceiving, updateMessage, nextMessageIndex, setNextMessageIndex);
+    try {
+      await handleFormSubmit(inputValue, text => updateMessage(text, responseMessageIndex));
+    } catch (error) {
+      console.error('Error invoking AiService: ', error);
+    }
+    setReceiving(false);
   };
 
-  const handleKeyDown = (event) => {
+  const handleKeyDown = async (event) => {
     if (!receiving && event.key === 'Enter' && event.ctrlKey) {
       event.preventDefault();
-      submitForm(event);
+      await submitForm(event);
     }
   };
 
