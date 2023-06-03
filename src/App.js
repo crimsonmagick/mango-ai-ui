@@ -1,5 +1,5 @@
 import {useEffect, useRef, useState} from 'react';
-import {sendExpression, startConversation} from './AiService';
+import {fetchConversationIds, fetchExpressions, sendExpression, startConversation} from './AiService';
 import './App.css';
 
 function App() {
@@ -9,12 +9,34 @@ function App() {
   const [textAreaRows, setTextAreaRows] = useState(1);
   const [receiving, setReceiving] = useState(false);
   const [currentConversationId, setCurrentConversationId] = useState(null)
+  const [conversationsIds, setConversationIds] = useState([]);
   const messagesEndRef = useRef(null);
+
+  useEffect(() => {
+    fetchConversationIds()
+      .then(ids => {
+          console.debug(`Fetched conversationIds=[${ids.join(',')}]`)
+          setConversationIds(ids)
+        }
+      );
+  }, [])
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({behavior: "smooth"});
   }, [messages, inputValue]);
 
+  const handleConversationSelect = (event) => {
+    const conversationId = event.target.value;
+    setCurrentConversationId(conversationId);
+    fetchExpressions(conversationId)
+      .then(expressions => {
+        const conversationMessages = expressions
+          .filter(expression => expression.actorId !== "INITIAL_PROMPT")
+          .map(expression => expression.content);
+        setMessages(conversationMessages);
+      });
+
+  };
   const handleInputTextChange = (event) => {
     const updatedValue = event.target.value;
     const numRows = updatedValue.split('\n').length;
@@ -29,6 +51,11 @@ function App() {
       return messages;
     });
   };
+
+  const newConversation = () => {
+    setCurrentConversationId(null);
+    setMessages([]);
+  }
 
   const handleFormSubmit = async (event) => {
     event.preventDefault();
@@ -46,6 +73,7 @@ function App() {
       if (currentConversationId == null) {
         const details = await startConversation(inputValue, text => updateMessage(text, responseMessageIndex));
         setCurrentConversationId(details.conversationId);
+        setConversationIds(details.conversationId);
       } else {
         await sendExpression(currentConversationId, inputValue, text => updateMessage(text, responseMessageIndex));
       }
@@ -65,6 +93,14 @@ function App() {
 
   return (
     <div className="App">
+      <div className="sidebar">
+        <select onChange={handleConversationSelect}>
+          {conversationsIds.map((conversationId) => (
+            <option key={conversationId} value={conversationId}>{conversationId}</option>
+          ))}
+        </select>
+        <button onClick={() => newConversation()}>Start New Conversation</button>
+      </div>
       <div className="App-body">
         <div className="message-container">
           {messages.map((msg, index) => (

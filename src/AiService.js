@@ -1,11 +1,28 @@
 import config from './Config';
 
 const startConversation = async (text, callback) => {
-  return invokeService("/conversations", text, callback);
+  return invokeService("/streamed/conversations", text, callback);
 }
 
 const sendExpression = async (conversationId, text, callback) => {
-  return invokeService(`/conversations/${conversationId}/expressions`, text, callback);
+  return invokeService(`/streamed/conversations/${conversationId}/expressions`, text, callback);
+}
+
+const fetchConversationIds = () => {
+  return getSingleton(`${config.API_URL}/singleton/conversations/ids`);
+}
+
+const fetchExpressions = (conversationId) => {
+  return getSingleton(`${config.API_URL}/singleton/conversations/${conversationId}/expressions`);
+}
+
+const getSingleton = (url) => {
+  return fetch(url, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+    }
+  }).then(response => response.json());
 }
 
 const invokeService = async (resourceUrl, inputValue, callback) => {
@@ -81,4 +98,4 @@ const invokeService = async (resourceUrl, inputValue, callback) => {
   }
 };
 
-export {startConversation, sendExpression};
+export {startConversation, sendExpression, fetchConversationIds, fetchExpressions};
