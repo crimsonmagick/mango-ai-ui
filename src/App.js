@@ -72,7 +72,7 @@ function App() {
       if (currentConversationId == null) {
         const details = await startConversation(inputValue, text => updateMessage(text, responseMessageIndex));
         setCurrentConversationId(details.conversationId);
-        setConversationIds(details.conversationId);
+        setConversationIds(conversationsIds => [...conversationsIds, details.conversationId]);
       } else {
         await sendExpression(currentConversationId, inputValue, text => updateMessage(text, responseMessageIndex));
       }
