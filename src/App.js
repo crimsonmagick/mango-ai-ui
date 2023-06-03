@@ -93,12 +93,12 @@ function App() {
   return (
     <div className="App">
       <div className="sidebar">
+        <button onClick={newConversation}>Start New Conversation</button>
         {conversationsIds.map((conversationId) => (
           <button key={conversationId} onClick={() => handleConversationSelect(conversationId)}>
             {conversationId}
           </button>
         ))}
-        <button onClick={newConversation}>Start New Conversation</button>
       </div>
       <div className="App-body">
         <div className="message-container">

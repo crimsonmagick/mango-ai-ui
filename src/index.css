@@ -11,3 +11,18 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+* {
+  scrollbar-color: grey grey;  /* Makes the scrollbar grey */
+  scrollbar-width: thin;  /* Makes the scrollbar thin */
+}
+
+*::-webkit-scrollbar {
+  width: 5px;  /* Makes the scrollbar thin */
+  background-color: transparent;  /* Makes the scrollbar track transparent */
+}
+
+*::-webkit-scrollbar-thumb {
+  background: grey;  /* Makes the scrollbar thumb grey */
+  border-radius: 5px;  /* Makes the scrollbar thumb rounded */
+}
