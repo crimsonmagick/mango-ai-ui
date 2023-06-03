@@ -84,7 +84,7 @@ textarea {
 .sidebar {
   width: 20%;
   min-height: 80vh;
-  background-color: #484e5c;
+  background-color: #272a2a;
   color: white;
   padding: 10px;
   overflow-y: auto;
@@ -94,14 +94,15 @@ textarea {
   display: block;
   width: 100%;
   padding: 10px;
-  margin-bottom: 10px;
-  background-color: #007bff;
+  margin-bottom: 0;
+  background-color: #272a2a;
   color: white;
   border: none;
   cursor: pointer;
   text-align: left;
+  font-size: calc(5px + 1vmin);
 }
 
 .sidebar button:hover {
-  background-color: #0056b3;
+  background-color: #373b3b;
 }

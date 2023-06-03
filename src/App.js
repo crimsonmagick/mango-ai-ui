@@ -84,11 +84,15 @@ function App() {
   };
 
   const handleKeyDown = async (event) => {
-    if (!receiving && event.key === 'Enter' && event.ctrlKey) {
+    if (!isSubmitDisabled() && event.key === 'Enter' && event.ctrlKey) {
       event.preventDefault();
       await handleFormSubmit(event);
     }
   };
+
+  const isSubmitDisabled = () => {
+    return receiving || inputValue === null || inputValue.trim() === ""
+  }
 
   return (
     <div className="App">
@@ -109,7 +113,7 @@ function App() {
         <form onSubmit={handleFormSubmit} className="form-container">
           <div className="input-wrapper" ref={messagesEndRef}>
             <textarea value={inputValue} onChange={handleInputTextChange} onKeyDown={handleKeyDown} rows={textAreaRows}/>
-            <button type="submit" disabled={receiving}><i className="fa fa-paper-plane"></i></button>
+            <button type="submit" disabled={isSubmitDisabled()}><i className="fa fa-paper-plane"></i></button>
           </div>
         </form>
       </div>
