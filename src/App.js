@@ -1,5 +1,6 @@
 import {useEffect, useRef, useState} from 'react';
 import {fetchConversationIds, fetchExpressions, sendExpression, startConversation} from './AiService';
+import ReactMarkdown from 'react-markdown';
 import './App.css';
 
 function App() {
@@ -107,7 +108,9 @@ function App() {
       <div className="App-body">
         <div className="message-container">
           {messages.map((msg, index) => (
-            <p key={index}>{msg}</p>
+            <div className="message-wrapper" key={index}>
+              <ReactMarkdown key={index} children={msg} />
+            </div>
           ))}
         </div>
         <form onSubmit={handleFormSubmit} className="form-container">

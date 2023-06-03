@@ -73,11 +73,11 @@ textarea {
   width: 100%;
 }
 
-.message-container p:nth-child(odd) {
+.message-container .message-wrapper:nth-child(even) {
   background-color: #282c34;
 }
 
-.message-container p:nth-child(even) {
+.message-container .message-wrapper:nth-child(odd) {
   background-color: #484e5c;
 }
 
