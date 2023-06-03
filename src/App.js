@@ -25,8 +25,7 @@ function App() {
     messagesEndRef.current?.scrollIntoView({behavior: "smooth"});
   }, [messages, inputValue]);
 
-  const handleConversationSelect = (event) => {
-    const conversationId = event.target.value;
+  const handleConversationSelect = (conversationId) => {
     setCurrentConversationId(conversationId);
     fetchExpressions(conversationId)
       .then(expressions => {
@@ -36,7 +35,6 @@ function App() {
         setMessages(conversationMessages);
         setNextMessageIndex(conversationMessages.length);
       });
-
   };
   const handleInputTextChange = (event) => {
     const updatedValue = event.target.value;
@@ -95,12 +93,12 @@ function App() {
   return (
     <div className="App">
       <div className="sidebar">
-        <select onChange={handleConversationSelect}>
-          {conversationsIds.map((conversationId) => (
-            <option key={conversationId} value={conversationId}>{conversationId}</option>
-          ))}
-        </select>
-        <button onClick={() => newConversation()}>Start New Conversation</button>
+        {conversationsIds.map((conversationId) => (
+          <button key={conversationId} onClick={() => handleConversationSelect(conversationId)}>
+            {conversationId}
+          </button>
+        ))}
+        <button onClick={newConversation}>Start New Conversation</button>
       </div>
       <div className="App-body">
         <div className="message-container">
