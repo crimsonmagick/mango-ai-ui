@@ -34,6 +34,7 @@ function App() {
           .filter(expression => expression.actorId !== "INITIAL_PROMPT")
           .map(expression => expression.content);
         setMessages(conversationMessages);
+        setNextMessageIndex(conversationMessages.length);
       });
 
   };
