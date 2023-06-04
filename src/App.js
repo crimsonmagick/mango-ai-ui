@@ -1,8 +1,8 @@
 import {useEffect, useRef, useState} from 'react';
 import {fetchConversationIds, fetchExpressions, sendExpression, startConversation} from './AiService';
 import ReactMarkdown from 'react-markdown';
-import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
-import { materialDark } from 'react-syntax-highlighter/dist/esm/styles/prism';
+import {Prism as SyntaxHighlighter} from 'react-syntax-highlighter';
+import {materialDark} from 'react-syntax-highlighter/dist/esm/styles/prism';
 import './App.css';
 
 function App() {
@@ -14,6 +14,15 @@ function App() {
   const [currentConversationId, setCurrentConversationId] = useState(null)
   const [conversationsIds, setConversationIds] = useState([]);
   const messagesEndRef = useRef(null);
+  const [copyButtonText, setCopyButtonText] = useState('Copy');
+
+  const handleCopyButtonPress = (codeString) => {
+    navigator.clipboard.writeText(codeString)
+      .then(() => {
+        setCopyButtonText('Copied');
+        setTimeout(() => setCopyButtonText('Copy'), 1500); // Reset after 1.5 seconds
+      })
+  };
 
   useEffect(() => {
     fetchConversationIds()
@@ -97,15 +106,21 @@ function App() {
     return receiving || inputValue === null || inputValue.trim() === ""
   }
 
-  function renderCodeBlock({ node, inline, className, children, ...props }) {
+  const renderCodeBlock = ({node, inline, className, children, ...props}) => {
     const match = /language-(\w+)/.exec(className || '')
+    const codeString = String(children).replace(/\n$/, '');
     let language = match ? match[1] : '';
-    return !inline
-      ? <SyntaxHighlighter language={language} style={materialDark} PreTag="div" children={String(children).replace(/\n$/, '')} {...props} />
-      : <code className="code-material-dark" {...props}>{children}</code>
+    return !inline ?
+      <div className="codeContainer">
+        <div className="codeHeader">
+          <button onClick={() => handleCopyButtonPress(codeString)}>
+            {copyButtonText}
+          </button>
+        </div>
+        <SyntaxHighlighter className="highlighter" language={language} style={materialDark} PreTag="div" children={codeString} {...props} />
+      </div>
+      : <code className="code-light-dark" {...props}>{children}</code>
   }
-
-
 
   return (
     <div className="App">

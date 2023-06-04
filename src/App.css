@@ -108,9 +108,49 @@ textarea {
 }
 
 /* In your CSS file */
-.code-material-dark {
+.code-light-dark {
   background-color: #31353f; /* Background color from materialDark theme */
   color: #eceff1; /* Text color from materialDark theme */
   /* Add other styles as needed */
 }
 
+.codeContainer {
+  display: flex;
+  flex-direction: column;
+  border-top: 1px solid #161718;
+  border-radius: 4px;
+  overflow-y: hidden;
+  overflow-x: auto;
+  width: 75%;
+  margin: 0 auto; /* Center the block horizontally */
+  font-size: 0.8em;
+}
+
+.codeHeader {
+  display: flex;
+  justify-content: flex-end;
+  background-color: #161718;
+  padding: 10px;
+}
+
+.codeHeader button {
+  color: white; /* Primary color for the button text */
+  border: 1px solid rgb(49, 53, 63); /* Border around the button */
+  padding: 6px 16px; /* Padding inside the button */
+  text-transform: uppercase; /* Uppercase text for Material Design style */
+  font-size: 0.675rem; /* Font size for the button text */
+  line-height: 1.75; /* Line height for the button text */
+  letter-spacing: 0.02857em; /* Letter spacing for the button text */
+  border-radius: 4px; /* Rounded corners for the button */
+  background: rgb(49, 53, 63);
+}
+
+.codeHeader button:active,
+.codeHeader button:focus {
+  background-color: #3f51b5; /* Primary color for the button background */
+  color: #ffffff; /* White color for the button text */
+}
+
+.highlighter {
+  margin: 0 !important;
+}
