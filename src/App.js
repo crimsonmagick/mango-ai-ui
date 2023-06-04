@@ -1,6 +1,8 @@
 import {useEffect, useRef, useState} from 'react';
 import {fetchConversationIds, fetchExpressions, sendExpression, startConversation} from './AiService';
 import ReactMarkdown from 'react-markdown';
+import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
+import { materialDark } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import './App.css';
 
 function App() {
@@ -95,6 +97,16 @@ function App() {
     return receiving || inputValue === null || inputValue.trim() === ""
   }
 
+  function renderCodeBlock({ node, inline, className, children, ...props }) {
+    const match = /language-(\w+)/.exec(className || '')
+    let language = match ? match[1] : '';
+    return !inline
+      ? <SyntaxHighlighter language={language} style={materialDark} PreTag="div" children={String(children).replace(/\n$/, '')} {...props} />
+      : <code className="code-material-dark" {...props}>{children}</code>
+  }
+
+
+
   return (
     <div className="App">
       <div className="sidebar">
@@ -109,7 +121,10 @@ function App() {
         <div className="message-container">
           {messages.map((msg, index) => (
             <div className="message-wrapper" key={index}>
-              <ReactMarkdown key={index} children={msg} />
+              <ReactMarkdown
+                children={msg}
+                components={{code: renderCodeBlock}}
+              />
             </div>
           ))}
         </div>

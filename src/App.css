@@ -106,3 +106,11 @@ textarea {
 .sidebar button:hover {
   background-color: #373b3b;
 }
+
+/* In your CSS file */
+.code-material-dark {
+  background-color: #31353f; /* Background color from materialDark theme */
+  color: #eceff1; /* Text color from materialDark theme */
+  /* Add other styles as needed */
+}
+
