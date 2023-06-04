@@ -11,7 +11,7 @@ function App() {
   const [nextMessageIndex, setNextMessageIndex] = useState(0);
   const [textAreaRows, setTextAreaRows] = useState(1);
   const [receiving, setReceiving] = useState(false);
-  const [currentConversationId, setCurrentConversationId] = useState(null)
+  const [currentConversationId, setCurrentConversationId] = useState(null);
   const [conversationsIds, setConversationIds] = useState([]);
   const messagesEndRef = useRef(null);
   const [copyButtonText, setCopyButtonText] = useState('Copy');
@@ -31,7 +31,7 @@ function App() {
           setConversationIds(ids)
         }
       );
-  }, [])
+  }, []);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({behavior: "smooth"});
@@ -66,7 +66,7 @@ function App() {
   const newConversation = () => {
     setCurrentConversationId(null);
     setMessages([]);
-  }
+  };
 
   const handleFormSubmit = async (event) => {
     event.preventDefault();
@@ -77,7 +77,7 @@ function App() {
 
     updateMessage(inputValue, userMessageIndex);
     updateMessage('', responseMessageIndex);
-    setNextMessageIndex(prevIndex => prevIndex + 2)
+    setNextMessageIndex(prevIndex => prevIndex + 2);
 
     setInputValue('');
     try {
@@ -103,11 +103,11 @@ function App() {
   };
 
   const isSubmitDisabled = () => {
-    return receiving || inputValue === null || inputValue.trim() === ""
-  }
+    return receiving || inputValue === null || inputValue.trim() === "";
+  };
 
   const renderCodeBlock = ({node, inline, className, children, ...props}) => {
-    const match = /language-(\w+)/.exec(className || '')
+    const match = /language-(\w+)/.exec(className || '');
     const codeString = String(children).replace(/\n$/, '');
     let language = match ? match[1] : '';
     return !inline ?
@@ -120,8 +120,8 @@ function App() {
         </div>
         <SyntaxHighlighter className="highlighter" language={language} style={materialDark} PreTag="div" children={codeString} {...props} />
       </div>
-      : <code className="code-light-dark" {...props}>{children}</code>
-  }
+      : <code className="code-light-dark" {...props}>{children}</code>;
+  };
 
   return (
     <div className="App">

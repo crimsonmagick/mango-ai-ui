@@ -58,10 +58,10 @@ const invokeService = async (resourceUrl, inputValue, callback) => {
         }
       },
       close: () => {
-        console.log('Stream closed')
+        console.log('Stream closed');
       },
       abort: (err) => {
-        console.error('Stream error:', err)
+        console.error('Stream error:', err);
       }
     };
 

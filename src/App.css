@@ -18,8 +18,6 @@
   box-sizing: border-box;
 }
 
-
-
 .App-link {
   color: #61dafb;
 }
@@ -34,7 +32,6 @@ textarea {
   overflow: hidden;
   margin-right: 15px;
 }
-
 
 .input-wrapper {
   display: flex;
@@ -107,7 +104,6 @@ textarea {
   background-color: #373b3b;
 }
 
-/* In your CSS file */
 .code-light-dark {
   background-color: #31353f; /* Background color from materialDark theme */
   color: #eceff1; /* Text color from materialDark theme */
