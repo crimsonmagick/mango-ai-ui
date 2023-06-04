@@ -113,6 +113,7 @@ function App() {
     return !inline ?
       <div className="codeContainer">
         <div className="codeHeader">
+          <div>{language}</div>
           <button onClick={() => handleCopyButtonPress(codeString)}>
             {copyButtonText}
           </button>

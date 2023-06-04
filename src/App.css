@@ -128,7 +128,7 @@ textarea {
 
 .codeHeader {
   display: flex;
-  justify-content: flex-end;
+  justify-content: space-between; /* Space items out between the start and end of the container */
   background-color: #161718;
   padding: 10px;
 }
