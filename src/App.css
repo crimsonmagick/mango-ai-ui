@@ -6,6 +6,7 @@
 }
 
 .App-body {
+  position: relative; /* Add this */
   width: 80%;
   display: flex;
   flex-direction: column;
@@ -59,15 +60,19 @@ textarea {
 }
 
 .form-container {
+  position: fixed; /* Add this */
+  bottom: 0; /* Add this */
   display: flex;
   justify-content: center;
-  width: 100%;
+  width: 80%; /* Modify this to match the .App-body width */
+  /*background-color: #282c34; !* Add this to match the .App color *!*/
 }
 
 .message-container {
   padding: 10px;
   margin: 10px 0;
   width: 100%;
+  padding-bottom: 60px;
 }
 
 .message-container .message-wrapper:nth-child(even) {
