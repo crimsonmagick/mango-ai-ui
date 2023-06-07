@@ -69,10 +69,18 @@ textarea {
 }
 
 .message-container {
-  padding: 10px;
   margin: 10px 0;
   width: 100%;
-  padding-bottom: 60px;
+  padding: 10px 10px 60px;
+}
+
+.message-container .message-wrapper {
+  text-align: left;
+  padding: 5px;
+}
+
+.message-container .message-wrapper p {
+  margin-left: 1em;
 }
 
 .message-container .message-wrapper:nth-child(even) {

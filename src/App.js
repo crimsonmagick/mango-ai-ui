@@ -15,6 +15,7 @@ function App() {
   const [conversationsIds, setConversationIds] = useState([]);
   const messagesEndRef = useRef(null);
   const [copyButtonText, setCopyButtonText] = useState('Copy');
+  const [shouldScroll, setShouldScroll] = useState(false);
 
   const handleCopyButtonPress = (codeString) => {
     navigator.clipboard.writeText(codeString)
@@ -34,8 +35,11 @@ function App() {
   }, []);
 
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({behavior: "smooth"});
-  }, [messages, inputValue]);
+    if (shouldScroll) {
+      messagesEndRef.current?.scrollIntoView({behavior: "smooth"});
+      setShouldScroll(false);
+    }
+  }, [messages]);
 
   const handleConversationSelect = (conversationId) => {
     setCurrentConversationId(conversationId);
@@ -46,6 +50,7 @@ function App() {
           .map(expression => expression.content);
         setMessages(conversationMessages);
         setNextMessageIndex(conversationMessages.length);
+        setShouldScroll(true);
       });
   };
   const handleInputTextChange = (event) => {
@@ -148,8 +153,9 @@ function App() {
             </div>
           ))}
         </div>
+        <span ref={messagesEndRef}></span>
         <form onSubmit={handleFormSubmit} className="form-container">
-          <div className="input-wrapper" ref={messagesEndRef}>
+          <div className="input-wrapper">
             <textarea value={inputValue} onChange={handleInputTextChange} onKeyDown={handleKeyDown} rows={textAreaRows}/>
             <button type="submit" disabled={isSubmitDisabled()}><i className="fa fa-paper-plane"></i></button>
           </div>
