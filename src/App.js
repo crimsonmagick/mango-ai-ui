@@ -49,10 +49,13 @@ function App() {
       });
   };
   const handleInputTextChange = (event) => {
-    const updatedValue = event.target.value;
-    const numRows = updatedValue.split('\n').length;
+    updateTextBox(event.target.value);
+  };
+
+  const updateTextBox = (inputText) => {
+    const numRows = inputText.split('\n').length;
     setTextAreaRows(numRows);
-    setInputValue(updatedValue);
+    setInputValue(inputText);
   };
 
   const updateMessage = (text, index) => {
@@ -71,6 +74,7 @@ function App() {
   const handleFormSubmit = async (event) => {
     event.preventDefault();
     setReceiving(true);
+    updateTextBox("");
 
     const userMessageIndex = nextMessageIndex;
     const responseMessageIndex = nextMessageIndex + 1;
