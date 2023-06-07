@@ -65,7 +65,7 @@ textarea {
   display: flex;
   justify-content: center;
   width: 80%; /* Modify this to match the .App-body width */
-  /*background-color: #282c34; !* Add this to match the .App color *!*/
+  background-color: #282c34; /* Add this to match the .App color */
 }
 
 .message-container {
@@ -90,6 +90,7 @@ textarea {
   color: white;
   padding: 10px;
   overflow-y: auto;
+  box-sizing: border-box;
 }
 
 .sidebar button {
