@@ -1,21 +1,24 @@
 import {useEffect, useRef, useState} from 'react';
-import {fetchConversationIds, fetchExpressions, sendExpression, startConversation} from './AiService';
+import {fetchConversationIds, fetchExpressions, sendExpression, startConversation} from './aiService.js';
 import ReactMarkdown from 'react-markdown';
 import {Prism as SyntaxHighlighter} from 'react-syntax-highlighter';
 import {materialDark} from 'react-syntax-highlighter/dist/esm/styles/prism';
+import {useDispatch, useSelector} from 'react-redux';
+import {setMessages, updateMessage} from './messageSlice';
 import './App.css';
+import { MessageInputForm } from './MessageInputForm';
 
 function App() {
-  const [inputValue, setInputValue] = useState('');
-  const [messages, setMessages] = useState([]);
   const [nextMessageIndex, setNextMessageIndex] = useState(0);
-  const [textAreaRows, setTextAreaRows] = useState(1);
   const [receiving, setReceiving] = useState(false);
   const [currentConversationId, setCurrentConversationId] = useState(null);
   const [conversationsIds, setConversationIds] = useState([]);
   const messagesEndRef = useRef(null);
   const [copyButtonText, setCopyButtonText] = useState('Copy');
   const [shouldScroll, setShouldScroll] = useState(false);
+
+  const dispatch = useDispatch();
+  const messages = useSelector((state) => state.messages);
 
   const handleCopyButtonPress = (codeString) => {
     navigator.clipboard.writeText(codeString)
@@ -48,71 +51,49 @@ function App() {
         const conversationMessages = expressions
           .filter(expression => expression.actorId !== "INITIAL_PROMPT")
           .map(expression => expression.content);
-        setMessages(conversationMessages);
+        dispatch(setMessages(conversationMessages));
         setNextMessageIndex(conversationMessages.length);
         setShouldScroll(true);
       });
   };
-  const handleInputTextChange = (event) => {
-    updateTextBox(event.target.value);
-  };
 
-  const updateTextBox = (inputText) => {
-    const numRows = inputText.split('\n').length;
-    setTextAreaRows(numRows);
-    setInputValue(inputText);
-  };
-
-  const updateMessage = (text, index) => {
-    setMessages((prevMessages) => {
-      const messages = prevMessages.slice();
-      messages.length <= index ? messages[index] = text : messages[index] = messages[index] + text;
-      return messages;
-    });
+  const dispatchMessageUpdate = (text, index) => {
+    dispatch(updateMessage({ text, index }));
   };
 
   const newConversation = () => {
     setCurrentConversationId(null);
-    setMessages([]);
+    dispatch(setMessages([]));
   };
 
-  const handleFormSubmit = async (event) => {
+  const handleFormSubmit = async (event, inputValue) => {
     event.preventDefault();
     setReceiving(true);
-    updateTextBox("");
 
     const userMessageIndex = nextMessageIndex;
     const responseMessageIndex = nextMessageIndex + 1;
 
-    updateMessage(inputValue, userMessageIndex);
-    updateMessage('', responseMessageIndex);
+    dispatchMessageUpdate(inputValue, userMessageIndex);
+    dispatchMessageUpdate('', responseMessageIndex);
     setNextMessageIndex(prevIndex => prevIndex + 2);
 
-    setInputValue('');
     try {
       if (currentConversationId == null) {
-        const details = await startConversation(inputValue, text => updateMessage(text, responseMessageIndex));
+        const details = await startConversation(inputValue, text => dispatchMessageUpdate(text, responseMessageIndex));
         setCurrentConversationId(details.conversationId);
         setConversationIds(conversationsIds => [...conversationsIds, details.conversationId]);
       } else {
-        await sendExpression(currentConversationId, inputValue, text => updateMessage(text, responseMessageIndex));
+        await sendExpression(currentConversationId, inputValue, text => dispatchMessageUpdate(text, responseMessageIndex));
       }
     } catch (error) {
       console.error('Error invoking AiService: ', error);
-      updateMessage("!!ERROR IN RESPONSE STREAM!!", responseMessageIndex);
+      dispatchMessageUpdate("!!ERROR IN RESPONSE STREAM!!", responseMessageIndex);
     }
     setReceiving(false);
   };
 
-  const handleKeyDown = async (event) => {
-    if (!isSubmitDisabled() && event.key === 'Enter' && event.ctrlKey) {
-      event.preventDefault();
-      await handleFormSubmit(event);
-    }
-  };
-
   const isSubmitDisabled = () => {
-    return receiving || inputValue === null || inputValue.trim() === "";
+    return receiving;
   };
 
   const renderCodeBlock = ({node, inline, className, children, ...props}) => {
@@ -154,12 +135,10 @@ function App() {
           ))}
         </div>
         <span ref={messagesEndRef}></span>
-        <form onSubmit={handleFormSubmit} className="form-container">
-          <div className="input-wrapper">
-            <textarea value={inputValue} onChange={handleInputTextChange} onKeyDown={handleKeyDown} rows={textAreaRows}/>
-            <button type="submit" disabled={isSubmitDisabled()}><i className="fa fa-paper-plane"></i></button>
-          </div>
-        </form>
+        <MessageInputForm
+          isSubmitDisabled={isSubmitDisabled}
+          handleFormSubmit={handleFormSubmit}
+        />
       </div>
     </div>
   );
