@@ -1,7 +1,6 @@
 import React, {useState} from 'react';
-import {updateMessage} from './messageSlice';
 
-export function MessageInputForm({isSubmitDisabled, handleFormSubmit }) {
+export function MessageInputForm({isSubmitDisabled, handleFormSubmit}) {
   const [inputValue, setInputValue] = useState('');
   const [textAreaRows, setTextAreaRows] = useState(1);
 
