@@ -17,12 +17,18 @@ export function MessageInputForm({isSubmitDisabled, handleFormSubmit}) {
   const handleKeyDown = async (event) => {
     if (!isSubmitDisabled() && event.key === 'Enter' && event.ctrlKey) {
       event.preventDefault();
+      setInputValue('');
       await handleFormSubmit(event, inputValue);
     }
   };
 
   return (
-    <form onSubmit={(event) => handleFormSubmit(event, inputValue)} className="form-container">
+    <form
+      onSubmit={(event) => {
+        handleFormSubmit(event, inputValue);
+        setInputValue('');
+      }}
+      className="form-container">
       <div className="input-wrapper">
         <textarea value={inputValue} onChange={handleInputTextChange} onKeyDown={handleKeyDown} rows={textAreaRows}/>
         <button type="submit" disabled={isSubmitDisabled() || inputValue === null || inputValue.trim() === ''}><i className="fa fa-paper-plane"></i></button>
