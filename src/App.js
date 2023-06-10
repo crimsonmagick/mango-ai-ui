@@ -5,6 +5,7 @@ import {setMessages, updateMessage} from './messageSlice';
 import './App.css';
 import {MessageInputForm} from './MessageInputForm';
 import {MessageViewer} from './MessageViewer.js';
+import {Sidebar} from './Sidebar.js';
 
 function App() {
   const [nextMessageIndex, setNextMessageIndex] = useState(0);
@@ -20,10 +21,9 @@ function App() {
   useEffect(() => {
     fetchConversationIds()
       .then(ids => {
-          console.debug(`Fetched conversationIds=[${ids.join(',')}]`)
-          setConversationIds(ids)
-        }
-      );
+        console.debug(`Fetched conversationIds=[${ids.join(',')}]`)
+        setConversationIds(ids)
+      });
   }, []);
 
   useEffect(() => {
@@ -85,26 +85,20 @@ function App() {
     return receiving;
   };
 
-  return (
-    <div className="App">
-      <div className="sidebar">
-        <button onClick={newConversation}>Start New Conversation</button>
-        {conversationsIds.map((conversationId) => (
-          <button key={conversationId} onClick={() => handleConversationSelect(conversationId)}>
-            {conversationId}
-          </button>
-        ))}
-      </div>
-      <div className="App-body">
-        <MessageViewer messages={messages}/>
-        <span ref={messagesEndRef}></span>
-        <MessageInputForm
-          isSubmitDisabled={isSubmitDisabled}
-          handleFormSubmit={handleFormSubmit}
-        />
-      </div>
+  return (<div className="App">
+    <Sidebar conversationIds={conversationsIds}
+             newConversationHandler={newConversation}
+             conversationSelectHandler={handleConversationSelect}
+    />
+    <div className="App-body">
+      <MessageViewer messages={messages}/>
+      <span ref={messagesEndRef}></span>
+      <MessageInputForm
+        isSubmitDisabled={isSubmitDisabled}
+        handleFormSubmit={handleFormSubmit}
+      />
     </div>
-  );
+  </div>);
 }
 
 export default App;
