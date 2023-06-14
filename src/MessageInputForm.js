@@ -26,7 +26,7 @@ export function MessageInputForm({isSubmitDisabled, handleFormSubmit}) {
     <form
       onSubmit={(event) => {
         handleFormSubmit(event, inputValue);
-        setInputValue('');
+        updateTextBox('');
       }}
       className="form-container">
       <div className="input-wrapper">
