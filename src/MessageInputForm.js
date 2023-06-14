@@ -17,7 +17,7 @@ export function MessageInputForm({isSubmitDisabled, handleFormSubmit}) {
   const handleKeyDown = async (event) => {
     if (!isSubmitDisabled() && event.key === 'Enter' && event.ctrlKey) {
       event.preventDefault();
-      setInputValue('');
+      updateTextBox('');
       await handleFormSubmit(event, inputValue);
     }
   };
