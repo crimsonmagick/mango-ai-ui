@@ -25,13 +25,13 @@ const getSingleton = (url) => {
   }).then(response => response.json());
 }
 
-const invokeService = async (resourceUrl, inputValue, callback) => {
+const invokeService = async (resourceUrl, inputValue, callback, model="gpt-3") => {
   const response = await fetch(config.API_URL + resourceUrl, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify({content: inputValue}),
+    body: JSON.stringify({content: inputValue, model}),
   });
 
   if (response.status === 200 && response.headers.get('Content-Type') === 'application/x-ndjson') {

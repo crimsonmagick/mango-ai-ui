@@ -14,9 +14,12 @@ function App() {
   const [conversationsIds, setConversationIds] = useState([]);
   const messagesEndRef = useRef(null);
   const [shouldScroll, setShouldScroll] = useState(false);
+  const [model, setModel] = useState('gpt-4');
 
   const dispatch = useDispatch();
   const messages = useSelector((state) => state.messages);
+
+  const availableModels = ["gpt-3", "gpt-4", "davinci"];
 
   useEffect(() => {
     fetchConversationIds()
@@ -69,11 +72,11 @@ function App() {
 
     try {
       if (currentConversationId == null) {
-        const details = await startConversation(inputValue, text => dispatchMessageUpdate(text, responseMessageIndex));
+        const details = await startConversation(inputValue, text => dispatchMessageUpdate(text, responseMessageIndex), model);
         setCurrentConversationId(details.conversationId);
         setConversationIds(conversationsIds => [...conversationsIds, details.conversationId]);
       } else {
-        await sendExpression(currentConversationId, inputValue, text => dispatchMessageUpdate(text, responseMessageIndex));
+        await sendExpression(currentConversationId, inputValue, text => dispatchMessageUpdate(text, responseMessageIndex),  model);
       }
     } catch (error) {
       console.error('Error invoking AiService: ', error);
@@ -97,6 +100,9 @@ function App() {
       <MessageInputForm
         isSubmitDisabled={isSubmitDisabled}
         handleFormSubmit={handleFormSubmit}
+        availableModels={availableModels}
+        currentModel={model}
+        updateModel={setModel}
       />
     </div>
   </div>);
