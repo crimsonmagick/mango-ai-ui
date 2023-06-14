@@ -1,11 +1,11 @@
 import config from './Config';
 
-const startConversation = async (text, callback) => {
-  return invokeService("/streamed/conversations", text, callback);
+const startConversation = async (text, callback, model) => {
+  return invokeService("/streamed/conversations", text, callback, model);
 }
 
-const sendExpression = async (conversationId, text, callback) => {
-  return invokeService(`/streamed/conversations/${conversationId}/expressions`, text, callback);
+const sendExpression = async (conversationId, text, callback, model) => {
+  return invokeService(`/streamed/conversations/${conversationId}/expressions`, text, callback, model);
 }
 
 const fetchConversationIds = () => {
