@@ -47,6 +47,7 @@ function App() {
   };
 
   const dispatchMessageUpdate = (text, index) => {
+    setShouldScroll(true);
     dispatch(updateMessage({text, index}));
   };
 
