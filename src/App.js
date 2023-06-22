@@ -72,11 +72,11 @@ function App() {
 
     try {
       if (currentConversationId == null) {
-        const details = await startConversation(inputValue, text => dispatchMessageUpdate(text, responseMessageIndex), model);
+        const details = await startConversation(inputValue, message => dispatchMessageUpdate(message.contentFragment, responseMessageIndex), model);
         setCurrentConversationId(details.conversationId);
         setConversationIds(conversationsIds => [...conversationsIds, details.conversationId]);
       } else {
-        await sendExpression(currentConversationId, inputValue, text => dispatchMessageUpdate(text, responseMessageIndex),  model);
+        await sendExpression(currentConversationId, inputValue, message => dispatchMessageUpdate(message.contentFragment, responseMessageIndex),  model);
       }
     } catch (error) {
       console.error('Error invoking AiService: ', error);

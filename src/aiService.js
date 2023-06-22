@@ -25,7 +25,7 @@ const getSingleton = (url) => {
   }).then(response => response.json());
 }
 
-const invokeService = async (resourceUrl, inputValue, callback, model="gpt-3") => {
+const invokeService = async (resourceUrl, inputValue, callback, model = "gpt-3") => {
   const response = await fetch(config.API_URL + resourceUrl, {
     method: 'POST',
     headers: {
@@ -42,19 +42,21 @@ const invokeService = async (resourceUrl, inputValue, callback, model="gpt-3") =
 
     const textFragmentSink = {
       write: async (textString) => {
+        let messageObject;
         try {
-          const messageObject = JSON.parse(textString);
-          if (conversationId == null) {
-            conversationId = messageObject.conversationId;
-          }
-          if (typeof messageObject === "object" && messageObject.contentFragment !== null) {
-            const text = messageObject.contentFragment;
-            callback(text);
-          }
+          messageObject = JSON.parse(textString);
         } catch (error) {
           const errorMessage = `Unable to parse received text string. textString=${textString}`;
           console.error(errorMessage, error);
           throw new Error(errorMessage, {cause: error});
+        }
+        if (typeof messageObject === "object" && messageObject.contentFragment !== null) {
+          if (conversationId == null) {
+            conversationId = messageObject.conversationId;
+          }
+          callback(messageObject);
+        } else {
+          throw new Error(`Response not an object or contentFragment missing from server response, serverResponse=${textString}`);
         }
       },
       close: () => {
