@@ -1,4 +1,4 @@
-import { createSlice } from '@reduxjs/toolkit';
+import {createSlice} from '@reduxjs/toolkit';
 
 export const messageSlice = createSlice({
   name: 'messages',
@@ -8,13 +8,14 @@ export const messageSlice = createSlice({
       return action.payload;
     },
     updateMessage: (state, action) => {
-      const { index, text } = action.payload;
-      state.length <= index ? state[index] = text : state[index] = state[index] + text;
+      const {index, message} = action.payload;
+      state[index] = state.length <= index ? message :
+        {...state[index], contentFragment: state[index].contentFragment + message.contentFragment};
       return state;
     },
   },
 });
 
-export const { setMessages, updateMessage } = messageSlice.actions;
+export const {setMessages, updateMessage} = messageSlice.actions;
 
 export default messageSlice.reducer;

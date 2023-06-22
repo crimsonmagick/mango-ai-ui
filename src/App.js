@@ -42,16 +42,16 @@ function App() {
       .then(expressions => {
         const conversationMessages = expressions
           .filter(expression => expression.actorId !== "INITIAL_PROMPT")
-          .map(expression => expression.content);
+          .map(expression => ({contentFragment: expression.content}));
         dispatch(setMessages(conversationMessages));
         setNextMessageIndex(conversationMessages.length);
         setShouldScroll(true);
       });
   };
 
-  const dispatchMessageUpdate = (text, index) => {
+  const dispatchMessageUpdate = (message, index) => {
     setShouldScroll(true);
-    dispatch(updateMessage({text, index}));
+    dispatch(updateMessage({message, index}));
   };
 
   const newConversation = () => {
@@ -66,21 +66,21 @@ function App() {
     const userMessageIndex = nextMessageIndex;
     const responseMessageIndex = nextMessageIndex + 1;
 
-    dispatchMessageUpdate(inputValue, userMessageIndex);
-    dispatchMessageUpdate('', responseMessageIndex);
+    dispatchMessageUpdate({contentFragment: inputValue}, userMessageIndex);
+    dispatchMessageUpdate({contentFragment: ''}, responseMessageIndex);
     setNextMessageIndex(prevIndex => prevIndex + 2);
 
     try {
       if (currentConversationId == null) {
-        const details = await startConversation(inputValue, message => dispatchMessageUpdate(message.contentFragment, responseMessageIndex), model);
+        const details = await startConversation(inputValue, message => dispatchMessageUpdate(message, responseMessageIndex), model);
         setCurrentConversationId(details.conversationId);
         setConversationIds(conversationsIds => [...conversationsIds, details.conversationId]);
       } else {
-        await sendExpression(currentConversationId, inputValue, message => dispatchMessageUpdate(message.contentFragment, responseMessageIndex),  model);
+        await sendExpression(currentConversationId, inputValue, message => dispatchMessageUpdate(message, responseMessageIndex), model);
       }
     } catch (error) {
       console.error('Error invoking AiService: ', error);
-      dispatchMessageUpdate("!!ERROR IN RESPONSE STREAM!!", responseMessageIndex);
+      dispatchMessageUpdate({contentFragment: "!!ERROR IN RESPONSE STREAM!!"}, responseMessageIndex);
     }
     setReceiving(false);
   };
@@ -95,7 +95,7 @@ function App() {
              conversationSelectHandler={handleConversationSelect}
     />
     <div className="App-body">
-      <MessageViewer messages={messages}/>
+      <MessageViewer messages={messages.map(msg => msg.contentFragment)}/>
       <span ref={messagesEndRef}></span>
       <MessageInputForm
         isSubmitDisabled={isSubmitDisabled}
