@@ -2,6 +2,7 @@ import {useEffect, useRef, useState} from 'react';
 import {fetchConversationIds, fetchExpressions, sendExpression, startConversation} from './aiService.js';
 import {useDispatch, useSelector} from 'react-redux';
 import {setMessages, updateMessage} from './messageSlice';
+import {addConversation, updateMessageInConversation} from './conversationSlice.js';
 import './App.css';
 import {MessageInputForm} from './MessageInputForm';
 import {MessageViewer} from './MessageViewer.js';
