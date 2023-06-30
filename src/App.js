@@ -73,6 +73,7 @@ function App() {
           setCurrentConversationId(conversationId);
           setConversationIds(conversationsIds => [...conversationsIds, conversationId]);
           dispatch(addConversation({conversationId, messages: [{conversationId, content: inputValue}]}));
+          setNextMessageIndex(2);
         };
         const newConversationCallback = message => {
           const conversationId = message.conversationId;
