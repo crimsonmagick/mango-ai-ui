@@ -17,7 +17,6 @@ function App() {
   const [model, setModel] = useState('gpt-4');
 
   const dispatch = useDispatch();
-  const messages = useSelector(state => state.messages);
   const conversations = useSelector(state => state.conversations);
 
   const availableModels = ["gpt-3", "gpt-4", "davinci"];
@@ -30,12 +29,12 @@ function App() {
       });
   }, []);
 
-  // useEffect(() => {
-  //   if (shouldScroll) {
-  //     messagesEndRef.current?.scrollIntoView({behavior: "smooth"});
-  //     setShouldScroll(false);
-  //   }
-  // }, [messages, shouldScroll]);
+  useEffect(() => {
+    if (shouldScroll) {
+      messagesEndRef.current?.scrollIntoView({behavior: "smooth"});
+      setShouldScroll(false);
+    }
+  }, [conversations, shouldScroll]);
 
   const handleConversationSelect = (conversationId) => {
     setCurrentConversationId(conversationId);
@@ -87,7 +86,7 @@ function App() {
         dispatchMessageUpdate(currentConversationId, {contentFragment: inputValue}, userMessageIndex);
         dispatchMessageUpdate(currentConversationId, {contentFragment: ''}, responseMessageIndex);
         setNextMessageIndex(prevIndex => prevIndex + 2);
-        await sendExpression(currentConversationId, inputValue, message => dispatchMessageUpdate(message, responseMessageIndex), model);
+        await sendExpression(currentConversationId, inputValue, message => dispatchMessageUpdate(currentConversationId, message, responseMessageIndex), model);
       }
     } catch (error) {
       console.error('Error invoking AiService: ', error);
