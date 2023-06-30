@@ -9,8 +9,8 @@ export const messageSlice = createSlice({
     },
     updateMessage: (state, action) => {
       const {index, message} = action.payload;
-      state[index] = state.length <= index ? message :
-        {...state[index], contentFragment: state[index].contentFragment + message.contentFragment};
+      state[index] = state.length <= index ? {content: message.contentFragment} :
+        {...state[index], content: state[index].content + message.contentFragment};
       return state;
     },
   },

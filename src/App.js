@@ -41,8 +41,7 @@ function App() {
     fetchExpressions(conversationId)
       .then(expressions => {
         const conversationMessages = expressions
-          .filter(expression => expression.actorId !== "INITIAL_PROMPT")
-          .map(expression => ({contentFragment: expression.content}));
+          .filter(expression => expression.actorId !== "INITIAL_PROMPT");
         dispatch(setMessages(conversationMessages));
         setNextMessageIndex(conversationMessages.length);
         setShouldScroll(true);
@@ -95,7 +94,7 @@ function App() {
              conversationSelectHandler={handleConversationSelect}
     />
     <div className="App-body">
-      <MessageViewer messages={messages.map(msg => msg.contentFragment)}/>
+      <MessageViewer messages={messages.map(msg => msg.content)}/>
       <span ref={messagesEndRef}></span>
       <MessageInputForm
         isSubmitDisabled={isSubmitDisabled}
