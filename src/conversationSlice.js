@@ -11,13 +11,6 @@ const conversationSlice = createSlice({
         messages: messages,
       };
     },
-    createConversation: (state, action) => {
-      const {conversationId} = action.payload;
-      state[conversationId] = {
-        id: conversationId,
-        messages: [],
-      };
-    },
     selectConversation: (state, action) => {
       const {conversationId} = action.payload;
       // set the currentConversationId in Redux state

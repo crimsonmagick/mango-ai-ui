@@ -29,23 +29,25 @@ function App() {
       });
   }, []);
 
-  useEffect(() => {
-    if (shouldScroll) {
-      messagesEndRef.current?.scrollIntoView({behavior: "smooth"});
-      setShouldScroll(false);
-    }
-  }, [conversations, shouldScroll]);
+  // useEffect(() => {
+  //   if (shouldScroll) {
+  //     messagesEndRef.current?.scrollIntoView({behavior: "smooth"});
+  //     setShouldScroll(false);
+  //   }
+  // }, [conversations, shouldScroll]);
 
   const handleConversationSelect = (conversationId) => {
     setCurrentConversationId(conversationId);
-    fetchExpressions(conversationId)
-      .then(expressions => {
-        const conversationMessages = expressions
-          .filter(expression => expression.actorId !== "INITIAL_PROMPT");
-        dispatch(addConversation({conversationId, messages: conversationMessages}));
-        setNextMessageIndex(conversationMessages.length);
-        setShouldScroll(true);
-      });
+    if (!conversations[conversationId]) {
+      fetchExpressions(conversationId)
+        .then(expressions => {
+          const conversationMessages = expressions
+            .filter(expression => expression.actorId !== "INITIAL_PROMPT");
+          dispatch(addConversation({conversationId, messages: conversationMessages}));
+          setNextMessageIndex(conversationMessages.length);
+          setShouldScroll(true);
+        });
+    }
   };
 
   const dispatchMessageUpdate = (conversationId, message, index) => {
