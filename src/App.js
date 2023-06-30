@@ -1,8 +1,7 @@
 import {useEffect, useRef, useState} from 'react';
 import {fetchConversationIds, fetchExpressions, sendExpression, startConversation} from './aiService.js';
 import {useDispatch, useSelector} from 'react-redux';
-import {setMessages, updateMessage} from './messageSlice';
-import {addConversation, createConversation, selectConversation, addMessageToConversation, updateMessageInConversation} from './conversationSlice.js';
+import {addConversation, updateMessageInConversation} from './conversationSlice.js';
 import './App.css';
 import {MessageInputForm} from './MessageInputForm';
 import {MessageViewer} from './MessageViewer.js';
@@ -18,7 +17,8 @@ function App() {
   const [model, setModel] = useState('gpt-4');
 
   const dispatch = useDispatch();
-  const messages = useSelector((state) => state.messages);
+  const messages = useSelector(state => state.messages);
+  const conversations = useSelector(state => state.conversations);
 
   const availableModels = ["gpt-3", "gpt-4", "davinci"];
 
@@ -30,12 +30,12 @@ function App() {
       });
   }, []);
 
-  useEffect(() => {
-    if (shouldScroll) {
-      messagesEndRef.current?.scrollIntoView({behavior: "smooth"});
-      setShouldScroll(false);
-    }
-  }, [messages, shouldScroll]);
+  // useEffect(() => {
+  //   if (shouldScroll) {
+  //     messagesEndRef.current?.scrollIntoView({behavior: "smooth"});
+  //     setShouldScroll(false);
+  //   }
+  // }, [messages, shouldScroll]);
 
   const handleConversationSelect = (conversationId) => {
     setCurrentConversationId(conversationId);
@@ -43,20 +43,19 @@ function App() {
       .then(expressions => {
         const conversationMessages = expressions
           .filter(expression => expression.actorId !== "INITIAL_PROMPT");
-        dispatch(setMessages(conversationMessages));
+        dispatch(addConversation({conversationId, messages: conversationMessages}));
         setNextMessageIndex(conversationMessages.length);
         setShouldScroll(true);
       });
   };
 
-  const dispatchMessageUpdate = (message, index) => {
+  const dispatchMessageUpdate = (conversationId, message, index) => {
     setShouldScroll(true);
-    dispatch(updateMessage({message, index}));
+    dispatch(updateMessageInConversation({conversationId, message, index}));
   };
 
   const newConversation = () => {
     setCurrentConversationId(null);
-    dispatch(setMessages([]));
   };
 
   const handleFormSubmit = async (event, inputValue) => {
@@ -66,21 +65,33 @@ function App() {
     const userMessageIndex = nextMessageIndex;
     const responseMessageIndex = nextMessageIndex + 1;
 
-    dispatchMessageUpdate({contentFragment: inputValue}, userMessageIndex);
-    dispatchMessageUpdate({contentFragment: ''}, responseMessageIndex);
-    setNextMessageIndex(prevIndex => prevIndex + 2);
-
     try {
       if (currentConversationId == null) {
-        const details = await startConversation(inputValue, message => dispatchMessageUpdate(message, responseMessageIndex), model);
-        setCurrentConversationId(details.conversationId);
-        setConversationIds(conversationsIds => [...conversationsIds, details.conversationId]);
+        let newConversationInitialized = false;
+        const newConversationSetup = conversationId => {
+          setCurrentConversationId(conversationId);
+          setConversationIds(conversationsIds => [...conversationsIds, conversationId]);
+          dispatch(addConversation({conversationId, messages: [{conversationId, content: inputValue}]}));
+        };
+        const newConversationCallback = message => {
+          const conversationId = message.conversationId;
+          if (!newConversationInitialized) {
+            newConversationSetup(conversationId);
+            newConversationInitialized = true;
+          }
+          dispatchMessageUpdate(conversationId, message, responseMessageIndex);
+        };
+        await startConversation(inputValue, newConversationCallback, model);
+
       } else {
+        dispatchMessageUpdate(currentConversationId, {contentFragment: inputValue}, userMessageIndex);
+        dispatchMessageUpdate(currentConversationId, {contentFragment: ''}, responseMessageIndex);
+        setNextMessageIndex(prevIndex => prevIndex + 2);
         await sendExpression(currentConversationId, inputValue, message => dispatchMessageUpdate(message, responseMessageIndex), model);
       }
     } catch (error) {
       console.error('Error invoking AiService: ', error);
-      dispatchMessageUpdate({contentFragment: "!!ERROR IN RESPONSE STREAM!!"}, responseMessageIndex);
+      dispatchMessageUpdate(currentConversationId, {contentFragment: "!!ERROR IN RESPONSE STREAM!!"}, responseMessageIndex);
     }
     setReceiving(false);
   };
@@ -90,7 +101,7 @@ function App() {
   };
 
   const prepareMessages = () => {
-    return messages.map(msg => msg.content);
+    return currentConversationId && conversations[currentConversationId] ? conversations[currentConversationId].messages.map(msg => msg.content) : [];
   };
 
   return (<div className="App">
