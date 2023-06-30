@@ -89,13 +89,17 @@ function App() {
     return receiving;
   };
 
+  const prepareMessages = () => {
+    return messages.map(msg => msg.content);
+  };
+
   return (<div className="App">
     <Sidebar conversationIds={conversationsIds}
              newConversationHandler={newConversation}
              conversationSelectHandler={handleConversationSelect}
     />
     <div className="App-body">
-      <MessageViewer messages={messages.map(msg => msg.content)}/>
+      <MessageViewer messages={prepareMessages()}/>
       <span ref={messagesEndRef}></span>
       <MessageInputForm
         isSubmitDisabled={isSubmitDisabled}
