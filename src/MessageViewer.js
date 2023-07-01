@@ -1,9 +1,27 @@
 import ReactMarkdown from 'react-markdown';
 import {Prism as SyntaxHighlighter} from 'react-syntax-highlighter';
 import {materialDark} from 'react-syntax-highlighter/dist/cjs/styles/prism/index.js';
-import {useState} from 'react';
+import {useEffect, useRef, useState} from 'react';
 
 export function MessageViewer({messages}) {
+
+  const scrollRef = useRef();
+
+  const handleScroll = element => {
+    if (isFullyScrolled(element.target)) {
+      console.log("Reached bottom!");
+    }
+  }
+
+  const isFullyScrolled = target => target.scrollHeight - target.scrollTop === target.clientHeight;
+
+  useEffect(() => {
+    const scrollElement = scrollRef.current;
+    if (scrollElement) {
+      scrollElement.addEventListener('scroll', handleScroll);
+      return () => scrollElement.removeEventListener('scroll', handleScroll);
+    }
+  }, []);
 
   const [copyButtonText, setCopyButtonText] = useState('Copy');
 
@@ -32,7 +50,7 @@ export function MessageViewer({messages}) {
   };
 
   return (
-    <div className="message-container">
+    <div className="message-container" ref={scrollRef}>
       {messages.map((msg, index) => (
         <div className="message-wrapper" key={index}>
           <ReactMarkdown

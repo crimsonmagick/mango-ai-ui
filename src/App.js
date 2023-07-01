@@ -29,12 +29,12 @@ function App() {
       });
   }, []);
 
-  // useEffect(() => {
-  //   if (shouldScroll) {
-  //     messagesEndRef.current?.scrollIntoView({behavior: "smooth"});
-  //     setShouldScroll(false);
-  //   }
-  // }, [conversations, shouldScroll]);
+  useEffect(() => {
+    if (shouldScroll) {
+      messagesEndRef.current?.scrollIntoView({behavior: "smooth"});
+      setShouldScroll(false);
+    }
+  }, [shouldScroll]);
 
   const handleConversationSelect = (conversationId) => {
     setCurrentConversationId(conversationId);
@@ -51,7 +51,7 @@ function App() {
   };
 
   const dispatchMessageUpdate = (conversationId, message, index) => {
-    setShouldScroll(true);
+    // setShouldScroll(true);
     dispatch(updateMessageInConversation({conversationId, message, index}));
   };
 
