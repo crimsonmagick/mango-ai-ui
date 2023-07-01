@@ -5,11 +5,20 @@ import {useEffect, useRef, useState} from 'react';
 
 export function MessageViewer({messages}) {
 
+  const [copyButtonText, setCopyButtonText] = useState('Copy');
+  // const [shouldScroll, setShouldScroll] = useState(false);
+  const [stickToBottom, setStickToBottom] = useState(false);
+
+  const messagesEndRef = useRef(null);
   const scrollRef = useRef();
+
 
   const handleScroll = element => {
     if (isFullyScrolled(element.target)) {
       console.log("Reached bottom!");
+      setStickToBottom(true);
+    } else {
+      setStickToBottom(false);
     }
   }
 
@@ -21,9 +30,16 @@ export function MessageViewer({messages}) {
       scrollElement.addEventListener('scroll', handleScroll);
       return () => scrollElement.removeEventListener('scroll', handleScroll);
     }
-  }, []);
+  });
 
-  const [copyButtonText, setCopyButtonText] = useState('Copy');
+
+  useEffect(() => {
+    if (stickToBottom) {
+      messagesEndRef.current?.scrollIntoView({behavior: "smooth"});
+      // setShouldScroll(false);
+    }
+  }, [messages]);
+
 
   const handleCopyButtonPress = (codeString) => {
     navigator.clipboard.writeText(codeString)
@@ -59,6 +75,7 @@ export function MessageViewer({messages}) {
           />
         </div>
       ))}
+      <span ref={messagesEndRef}></span>
     </div>
   );
 }

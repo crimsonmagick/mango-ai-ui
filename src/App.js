@@ -1,4 +1,4 @@
-import {useEffect, useRef, useState} from 'react';
+import {useEffect, useState} from 'react';
 import {fetchConversationIds, fetchExpressions, sendExpression, startConversation} from './aiService.js';
 import {useDispatch, useSelector} from 'react-redux';
 import {addConversation, updateMessageInConversation} from './conversationSlice.js';
@@ -12,8 +12,7 @@ function App() {
   const [receiving, setReceiving] = useState(false);
   const [currentConversationId, setCurrentConversationId] = useState(null);
   const [conversationsIds, setConversationIds] = useState([]);
-  const messagesEndRef = useRef(null);
-  const [shouldScroll, setShouldScroll] = useState(false);
+
   const [model, setModel] = useState('gpt-4');
 
   const dispatch = useDispatch();
@@ -29,12 +28,6 @@ function App() {
       });
   }, []);
 
-  useEffect(() => {
-    if (shouldScroll) {
-      messagesEndRef.current?.scrollIntoView({behavior: "smooth"});
-      setShouldScroll(false);
-    }
-  }, [shouldScroll]);
 
   const handleConversationSelect = (conversationId) => {
     setCurrentConversationId(conversationId);
@@ -45,7 +38,6 @@ function App() {
             .filter(expression => expression.actorId !== "INITIAL_PROMPT");
           dispatch(addConversation({conversationId, messages: conversationMessages}));
           setNextMessageIndex(conversationMessages.length);
-          setShouldScroll(true);
         });
     }
   };
@@ -113,7 +105,6 @@ function App() {
     />
     <div className="App-body">
       <MessageViewer messages={prepareMessages()}/>
-      <span ref={messagesEndRef}></span>
       <MessageInputForm
         isSubmitDisabled={isSubmitDisabled}
         handleFormSubmit={handleFormSubmit}
