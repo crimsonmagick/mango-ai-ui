@@ -7,7 +7,7 @@ export function MessageViewer({messages}) {
 
   const [copyButtonText, setCopyButtonText] = useState('Copy');
   // const [shouldScroll, setShouldScroll] = useState(false);
-  const [stickToBottom, setStickToBottom] = useState(false);
+  const [stickToBottom, setStickToBottom] = useState(true);
 
   const messagesEndRef = useRef(null);
   const scrollRef = useRef();

@@ -20,6 +20,15 @@ const conversationSlice = createSlice({
       const {conversationId, message} = action.payload;
       state[conversationId].messages.push({content: message.contentFragment});
     },
+    updateConversation: (state, action) => {
+      const {conversationId, nextMessageIndex, receiving} = action.payload;
+      if (nextMessageIndex) {
+        state[conversationId].nextMessageIndex = nextMessageIndex;
+      }
+      if (receiving) {
+        state[conversationId].receiving = receiving;
+      }
+    },
     updateMessageInConversation: (state, action) => {
       const {conversationId, index, message} = action.payload;
       const contentFragment = message.contentFragment;
@@ -35,6 +44,6 @@ const conversationSlice = createSlice({
   }
 });
 
-export const {addConversation, selectConversation, addMessageToConversation, createConversation, updateMessageInConversation} = conversationSlice.actions;
+export const {addConversation, selectConversation, addMessageToConversation, createConversation, updateConversation, updateMessageInConversation} = conversationSlice.actions;
 
 export default conversationSlice.reducer;
