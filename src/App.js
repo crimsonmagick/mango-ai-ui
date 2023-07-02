@@ -8,19 +8,20 @@ import {MessageViewer} from './MessageViewer.js';
 import {Sidebar} from './Sidebar.js';
 
 function App() {
-  const [nextMessageIndex, setNextMessageIndex] = useState(0);
   const [currentConversationId, setCurrentConversationId] = useState(null);
   const [conversationsIds, setConversationIds] = useState([]);
 
+  const availableModels = ["gpt-3", "gpt-4", "davinci"];
   const [model, setModel] = useState('gpt-4');
-
   const dispatch = useDispatch();
   const conversations = useSelector(state => state.conversations);
 
-  const availableModels = ["gpt-3", "gpt-4", "davinci"];
+  const setReceiving = (conversationId, receiving) => {
+    dispatch(updateConversation({conversationId, receiving}));
+  };
 
-  const setReceiving = receiving => {
-    dispatch(updateConversation({conversationId: currentConversationId, currentConversationId, receiving}));
+  const setNextMessageIndex = (conversationId, nextMessageIndex) => {
+    dispatch(updateConversation({conversationId, nextMessageIndex}));
   };
 
   useEffect(() => {
@@ -31,7 +32,6 @@ function App() {
       });
   }, []);
 
-
   const handleConversationSelect = (conversationId) => {
     setCurrentConversationId(conversationId);
     if (!conversations[conversationId]) {
@@ -40,7 +40,7 @@ function App() {
           const conversationMessages = expressions
             .filter(expression => expression.actorId !== "INITIAL_PROMPT");
           dispatch(addConversation({conversationId, messages: conversationMessages}));
-          setNextMessageIndex(conversationMessages.length);
+          setNextMessageIndex(conversationId, conversationMessages.length);
         });
     }
   };
@@ -55,10 +55,6 @@ function App() {
 
   const handleFormSubmit = async (event, inputValue) => {
     event.preventDefault();
-
-    const userMessageIndex = nextMessageIndex;
-    const responseMessageIndex = nextMessageIndex + 1;
-
     try {
       if (currentConversationId == null) {
         let newConversationInitialized = false;
@@ -66,7 +62,6 @@ function App() {
           setCurrentConversationId(conversationId);
           setConversationIds(conversationsIds => [...conversationsIds, conversationId]);
           dispatch(addConversation({conversationId, messages: [{conversationId, content: inputValue, receiving: false}]}));
-          setNextMessageIndex(2);
         };
         const newConversationCallback = message => {
           const conversationId = message.conversationId;
@@ -74,22 +69,27 @@ function App() {
             newConversationSetup(conversationId);
             newConversationInitialized = true;
           }
-          dispatchMessageUpdate(conversationId, message, responseMessageIndex);
+          dispatchMessageUpdate(conversationId, message, 1); // response will always be after user message
+          setNextMessageIndex(conversationId, 2);
         };
-        await startConversation(inputValue, newConversationCallback, model);
-
+        const response = await startConversation(inputValue, newConversationCallback, model);
+        setReceiving(response.conversationId, false);
       } else {
-        setReceiving(true);
-        dispatchMessageUpdate(currentConversationId, {contentFragment: inputValue}, userMessageIndex);
-        dispatchMessageUpdate(currentConversationId, {contentFragment: ''}, responseMessageIndex);
-        setNextMessageIndex(prevIndex => prevIndex + 2);
-        await sendExpression(currentConversationId, inputValue, message => dispatchMessageUpdate(currentConversationId, message, responseMessageIndex), model);
+        const conversationId = currentConversationId;
+        setReceiving(conversationId, true);
+
+        const userMessageIndex = conversations[conversationId].nextMessageIndex;
+        const responseMessageIndex = userMessageIndex + 1;
+
+        dispatchMessageUpdate(conversationId, {contentFragment: inputValue}, userMessageIndex);
+        dispatchMessageUpdate(conversationId, {contentFragment: ''}, responseMessageIndex);
+        setNextMessageIndex(responseMessageIndex + 1);
+        await sendExpression(conversationId, inputValue, message => dispatchMessageUpdate(conversationId, message, responseMessageIndex), model);
+        setReceiving(conversationId, false);
       }
     } catch (error) {
       console.error('Error invoking AiService: ', error);
-      dispatchMessageUpdate(currentConversationId, {contentFragment: "!!ERROR IN RESPONSE STREAM!!"}, responseMessageIndex);
     }
-    setReceiving(false);
   };
 
   const isSubmitDisabled = () => {

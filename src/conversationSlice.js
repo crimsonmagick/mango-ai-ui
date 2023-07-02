@@ -9,7 +9,8 @@ const conversationSlice = createSlice({
       state[conversationId] = {
         id: conversationId,
         messages,
-        receiving: receiving ? receiving : false
+        receiving: receiving ? receiving : false,
+        nextMessageIndex: messages.length - 1
       };
     },
     selectConversation: (state, action) => {
@@ -26,7 +27,7 @@ const conversationSlice = createSlice({
       if (nextMessageIndex) {
         state[conversationId].nextMessageIndex = nextMessageIndex;
       }
-      if (receiving) {
+      if (typeof receiving === 'boolean') {
         state[conversationId].receiving = receiving;
       }
     },
