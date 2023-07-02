@@ -1,7 +1,7 @@
 import {useEffect, useState} from 'react';
 import {fetchConversationIds, fetchExpressions, sendExpression, startConversation} from './aiService.js';
 import {useDispatch, useSelector} from 'react-redux';
-import {addConversation, updateMessageInConversation} from './conversationSlice.js';
+import {addConversation, updateConversation, updateMessageInConversation} from './conversationSlice.js';
 import './App.css';
 import {MessageInputForm} from './MessageInputForm';
 import {MessageViewer} from './MessageViewer.js';
@@ -9,7 +9,6 @@ import {Sidebar} from './Sidebar.js';
 
 function App() {
   const [nextMessageIndex, setNextMessageIndex] = useState(0);
-  const [receiving, setReceiving] = useState(false);
   const [currentConversationId, setCurrentConversationId] = useState(null);
   const [conversationsIds, setConversationIds] = useState([]);
 
@@ -19,6 +18,10 @@ function App() {
   const conversations = useSelector(state => state.conversations);
 
   const availableModels = ["gpt-3", "gpt-4", "davinci"];
+
+  const setReceiving = receiving => {
+    dispatch(updateConversation({conversationId: currentConversationId, currentConversationId, receiving}));
+  };
 
   useEffect(() => {
     fetchConversationIds()
@@ -43,7 +46,6 @@ function App() {
   };
 
   const dispatchMessageUpdate = (conversationId, message, index) => {
-    // setShouldScroll(true);
     dispatch(updateMessageInConversation({conversationId, message, index}));
   };
 
@@ -53,7 +55,6 @@ function App() {
 
   const handleFormSubmit = async (event, inputValue) => {
     event.preventDefault();
-    setReceiving(true);
 
     const userMessageIndex = nextMessageIndex;
     const responseMessageIndex = nextMessageIndex + 1;
@@ -64,7 +65,7 @@ function App() {
         const newConversationSetup = conversationId => {
           setCurrentConversationId(conversationId);
           setConversationIds(conversationsIds => [...conversationsIds, conversationId]);
-          dispatch(addConversation({conversationId, messages: [{conversationId, content: inputValue}]}));
+          dispatch(addConversation({conversationId, messages: [{conversationId, content: inputValue, receiving: false}]}));
           setNextMessageIndex(2);
         };
         const newConversationCallback = message => {
@@ -78,6 +79,7 @@ function App() {
         await startConversation(inputValue, newConversationCallback, model);
 
       } else {
+        setReceiving(true);
         dispatchMessageUpdate(currentConversationId, {contentFragment: inputValue}, userMessageIndex);
         dispatchMessageUpdate(currentConversationId, {contentFragment: ''}, responseMessageIndex);
         setNextMessageIndex(prevIndex => prevIndex + 2);
@@ -91,7 +93,7 @@ function App() {
   };
 
   const isSubmitDisabled = () => {
-    return receiving;
+    return conversations[currentConversationId]?.receiving;
   };
 
   const prepareMessages = () => {

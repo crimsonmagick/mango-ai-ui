@@ -5,10 +5,11 @@ const conversationSlice = createSlice({
   initialState: {},
   reducers: {
     addConversation: (state, action) => {
-      const {conversationId, messages} = action.payload;
+      const {conversationId, messages, receiving} = action.payload;
       state[conversationId] = {
         id: conversationId,
-        messages: messages,
+        messages,
+        receiving: receiving ? receiving : false
       };
     },
     selectConversation: (state, action) => {
