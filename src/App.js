@@ -4,7 +4,7 @@ import {useDispatch, useSelector} from 'react-redux';
 import {addConversation, updateConversation, updateMessageInConversation} from './conversationSlice.js';
 import './App.css';
 import {MessageInputForm} from './MessageInputForm';
-import {MessageViewer} from './MessageViewer.js';
+import {MessageViewer} from './viewer/MessageViewer.js';
 import {Sidebar} from './Sidebar.js';
 
 function App() {
