@@ -12,7 +12,7 @@ function App() {
   const [conversationsIds, setConversationIds] = useState([]);
 
   const availableModels = ["gpt-3", "gpt-4", "davinci"];
-  const [model, setModel] = useState('gpt-4');
+  const [model, setModel] = useState('gpt-3');
   const dispatch = useDispatch();
   const conversations = useSelector(state => state.conversations);
 
