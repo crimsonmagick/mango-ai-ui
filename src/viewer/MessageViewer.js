@@ -17,7 +17,6 @@ export function MessageViewer({messages}) {
     }
   }
 
-
   useEffect(() => {
     const scrollElement = scrollRef.current;
     if (scrollElement) {

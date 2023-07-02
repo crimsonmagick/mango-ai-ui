@@ -2,11 +2,11 @@
   text-align: center;
   background-color: #282c34;
   height: 100vh;
-  display: flex;  /* Added to create a horizontal flex container */
+  display: flex;  /* creates a horizontal flex container */
 }
 
 .App-body {
-  position: relative; /* Add this */
+  position: relative;
   width: 80%;
   display: flex;
   flex-direction: column;
@@ -92,12 +92,12 @@ textarea:focus {
 }
 
 .form-container {
-  position: fixed; /* Add this */
-  bottom: 0; /* Add this */
+  position: fixed;
+  bottom: 0;
   display: flex;
   justify-content: center;
-  width: 80%; /* Modify this to match the .App-body width */
-  background-color: #282c34; /* Add this to match the .App color */
+  width: 80%; /* matches the .App-body width */
+  background-color: #282c34; /* matches the .App color */
 }
 
 .message-container {
@@ -152,9 +152,8 @@ textarea:focus {
 }
 
 .code-light-dark {
-  background-color: #31353f; /* Background color from materialDark theme */
-  color: #eceff1; /* Text color from materialDark theme */
-  /* Add other styles as needed */
+  background-color: #31353f;
+  color: #eceff1;
 }
 
 .codeContainer {
@@ -177,21 +176,21 @@ textarea:focus {
 }
 
 .codeHeader button {
-  color: white; /* Primary color for the button text */
-  border: 1px solid rgb(49, 53, 63); /* Border around the button */
-  padding: 6px 16px; /* Padding inside the button */
-  text-transform: uppercase; /* Uppercase text for Material Design style */
-  font-size: 0.675rem; /* Font size for the button text */
-  line-height: 1.75; /* Line height for the button text */
-  letter-spacing: 0.02857em; /* Letter spacing for the button text */
-  border-radius: 4px; /* Rounded corners for the button */
+  color: white;
+  border: 1px solid rgb(49, 53, 63);
+  padding: 6px 16px;
+  text-transform: uppercase;
+  font-size: 0.675rem;
+  line-height: 1.75;
+  letter-spacing: 0.02857em;
+  border-radius: 4px;
   background: rgb(49, 53, 63);
 }
 
 .codeHeader button:active,
 .codeHeader button:focus {
-  background-color: #3f51b5; /* Primary color for the button background */
-  color: #ffffff; /* White color for the button text */
+  background-color: #3f51b5;
+  color: #ffffff;
 }
 
 .highlighter {
