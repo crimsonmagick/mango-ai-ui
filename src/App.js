@@ -83,7 +83,7 @@ function App() {
 
         dispatchMessageUpdate(conversationId, {contentFragment: inputValue}, userMessageIndex);
         dispatchMessageUpdate(conversationId, {contentFragment: ''}, responseMessageIndex);
-        setNextMessageIndex(responseMessageIndex + 1);
+        setNextMessageIndex(conversationId, responseMessageIndex + 1);
         await sendExpression(conversationId, inputValue, message => dispatchMessageUpdate(conversationId, message, responseMessageIndex), model);
         setReceiving(conversationId, false);
       }
