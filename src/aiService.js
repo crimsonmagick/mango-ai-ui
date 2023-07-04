@@ -13,7 +13,9 @@ const fetchConversationIds = () => {
 }
 
 const fetchConversationSummaries = () => {
-  return getSingleton(`${config.API_URL}/singleton/conversations/summaries`);
+  return getSingleton(`${config.API_URL}/singleton/conversations/summaries`)
+    .then(summaries =>
+      summaries.map(summary => ({...summary, createdAt: new Date(summary.createdAt), updatedAt: new Date(summary.updatedAt)})));
 }
 
 const fetchExpressions = (conversationId) => {

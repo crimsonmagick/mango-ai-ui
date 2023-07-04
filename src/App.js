@@ -50,6 +50,16 @@ function App() {
     setCurrentConversationId(null);
   };
 
+  const createSummary = (conversationId, content) => {
+    const summary = content.length < 128 ? content : content.substring(0, 127);
+    return {
+      conversationId,
+      summary,
+      createdAt: new Date(),
+      updatedAt: new Date()
+    };
+  };
+
   const handleFormSubmit = async (event, inputValue) => {
     event.preventDefault();
     try {
@@ -57,7 +67,7 @@ function App() {
         let newConversationInitialized = false;
         const newConversationSetup = conversationId => {
           setCurrentConversationId(conversationId);
-          setConversationSummaries(conversationSummaries => [...conversationSummaries, {conversationId}]);
+          setConversationSummaries(conversationSummaries => [...conversationSummaries, createSummary(conversationId, inputValue)]);
           dispatch(addConversation({conversationId, messages: [{conversationId, content: inputValue, receiving: false}]}));
         };
         const newConversationCallback = message => {
