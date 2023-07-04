@@ -1,9 +1,11 @@
-export function Sidebar({conversationIds, newConversationHandler, conversationSelectHandler}) {
+export function Sidebar({conversationSummaries, newConversationHandler, conversationSelectHandler}) {
+
+  const summaries = conversationSummaries || [];
 
   return (<div className="sidebar">
       <button onClick={newConversationHandler}>Start New Conversation</button>
-      {conversationIds.map((conversationId) => (<button key={conversationId} onClick={() => conversationSelectHandler(conversationId)}>
-        {conversationId}
+      {summaries.map((summary) => (<button key={summary.conversationId} onClick={() => conversationSelectHandler(summary.conversationId)}>
+        {summary.conversationId}
       </button>))}
     </div>
 

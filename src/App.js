@@ -1,5 +1,5 @@
 import {useEffect, useState} from 'react';
-import {fetchConversationIds, fetchExpressions, sendExpression, startConversation} from './aiService.js';
+import {fetchConversationSummaries, fetchExpressions, sendExpression, startConversation} from './aiService.js';
 import {useDispatch, useSelector} from 'react-redux';
 import {addConversation, updateConversation, updateMessageInConversation} from './conversationSlice.js';
 import './App.css';
@@ -9,7 +9,7 @@ import {Sidebar} from './Sidebar.js';
 
 function App() {
   const [currentConversationId, setCurrentConversationId] = useState(null);
-  const [conversationsIds, setConversationIds] = useState([]);
+  const [conversationSummaries, setConversationSummaries] = useState([]);
 
   const availableModels = ["gpt-3", "gpt-4", "davinci"];
   const [model, setModel] = useState('gpt-3');
@@ -25,11 +25,8 @@ function App() {
   };
 
   useEffect(() => {
-    fetchConversationIds()
-      .then(ids => {
-        console.debug(`Fetched conversationIds=[${ids.join(',')}]`)
-        setConversationIds(ids)
-      });
+    fetchConversationSummaries()
+      .then(summaries => setConversationSummaries(summaries))
   }, []);
 
   const handleConversationSelect = (conversationId) => {
@@ -60,7 +57,7 @@ function App() {
         let newConversationInitialized = false;
         const newConversationSetup = conversationId => {
           setCurrentConversationId(conversationId);
-          setConversationIds(conversationsIds => [...conversationsIds, conversationId]);
+          setConversationSummaries(conversationSummaries => [...conversationSummaries, {conversationId}]);
           dispatch(addConversation({conversationId, messages: [{conversationId, content: inputValue, receiving: false}]}));
         };
         const newConversationCallback = message => {
@@ -101,7 +98,7 @@ function App() {
   };
 
   return (<div className="App">
-    <Sidebar conversationIds={conversationsIds}
+    <Sidebar conversationSummaries={conversationSummaries}
              newConversationHandler={newConversation}
              conversationSelectHandler={handleConversationSelect}
     />

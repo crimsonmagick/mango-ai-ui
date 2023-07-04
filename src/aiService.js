@@ -12,6 +12,10 @@ const fetchConversationIds = () => {
   return getSingleton(`${config.API_URL}/singleton/conversations/ids`);
 }
 
+const fetchConversationSummaries = () => {
+  return getSingleton(`${config.API_URL}/singleton/conversations/summaries`);
+}
+
 const fetchExpressions = (conversationId) => {
   return getSingleton(`${config.API_URL}/singleton/conversations/${conversationId}/expressions`);
 }
@@ -100,4 +104,4 @@ const invokeService = async (resourceUrl, inputValue, callback, model = "gpt-3")
   }
 };
 
-export {startConversation, sendExpression, fetchConversationIds, fetchExpressions};
+export {startConversation, sendExpression, fetchConversationIds, fetchConversationSummaries, fetchExpressions};
