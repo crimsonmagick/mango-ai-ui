@@ -1,9 +1,10 @@
 import {Prism as SyntaxHighlighter} from 'react-syntax-highlighter';
 import {materialDark} from 'react-syntax-highlighter/dist/cjs/styles/prism/index.js';
+import { memo } from 'react';
 import {useState} from 'react';
 import ReactMarkdown from 'react-markdown';
 
-export function CodeViewer({message}) {
+export const CodeViewer = memo(({message}) => {
 
   const [copyButtonText, setCopyButtonText] = useState('Copy');
   const handleCopyButtonPress = (codeString) => {
@@ -34,5 +35,4 @@ export function CodeViewer({message}) {
     children={message}
     components={{code: renderCodeBlock}}
   />;
-
-}
+});
